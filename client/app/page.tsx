@@ -8,7 +8,8 @@ export default function VoiceRecorder() {
   const audioChunks = useRef<Blob[]>([]);
 
   const fetchVoices = async () => {
-    const res = await fetch("http://localhost:5000/voices");
+    // const res = await fetch("http://localhost:5000/voices");
+    const res = await fetch("https://server-mu-ochre-55.vercel.app/voices");
     const data = await res.json();
     setVoices(data);
   };
@@ -32,7 +33,8 @@ export default function VoiceRecorder() {
       const formData = new FormData();
       formData.append("voice", audioBlob, "recording.webm");
 
-      await fetch("http://localhost:5000/upload-voice", {
+      // await fetch("http://localhost:5000/upload-voice", {
+      await fetch("https://server-mu-ochre-55.vercel.app/upload-voice", {
         method: "POST",
         body: formData,
       });
@@ -51,13 +53,15 @@ export default function VoiceRecorder() {
 
   return (
     <div>
-      {recording ? (
+      <div className="py-12">
+        {recording ? (
         <button onClick={stopRecording}>Stop</button>
-      ) : (
-        <button onClick={startRecording}>Start Recording</button>
-      )}
+        ) : (
+          <button onClick={startRecording}>Start Recording</button>
+        )}
+      </div>
 
-      <h2>Saved Voices</h2>
+      <h2 className="">Saved Voices</h2>
       {voices.map((voice) => (
         <div key={voice.id}>
           <audio
