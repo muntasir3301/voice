@@ -68,5 +68,11 @@ app.get("/voices", async (req, res) => {
 
 
 
+// Home Route
+app.get('/', (req, res) => {
+  res.send('Hello Blood Donors!')
+})
+
+
 
 app.listen(5000, () => console.log("Server running on port 5000"));
