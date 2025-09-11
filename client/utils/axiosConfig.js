@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: "http://localhost:5000",
+    // baseURL: "http://localhost:5000",
+    baseURL: "https://server-mu-ochre-55.vercel.app",
     timeout: 50000,
 });
 
