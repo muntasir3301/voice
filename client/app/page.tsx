@@ -1,4 +1,5 @@
 "use client";
+import api from "@/utils/axiosConfig";
 import { useState, useRef, useEffect } from "react";
 
 export default function VoiceRecorder() {
@@ -9,9 +10,13 @@ export default function VoiceRecorder() {
 
   const fetchVoices = async () => {
     // const res = await fetch("http://localhost:5000/voices");
-    const res = await fetch("https://server-mu-ochre-55.vercel.app/voices");
-    const data = await res.json();
-    setVoices(data);
+    // const res = await fetch("https://server-mu-ochre-55.vercel.app/voices");
+    // const data = await res.json();
+    // setVoices(data);
+
+    api.get('/voices')
+    .then((res)=> setVoices(res.data))
+    .catch((err)=> console.log(err));
   };
 
   useEffect(() => {
@@ -34,12 +39,16 @@ export default function VoiceRecorder() {
       formData.append("voice", audioBlob, "recording.webm");
 
       // await fetch("http://localhost:5000/upload-voice", {
-      await fetch("https://server-mu-ochre-55.vercel.app/upload-voice", {
-        method: "POST",
-        body: formData,
-      });
+      // await fetch("https://server-mu-ochre-55.vercel.app/upload-voice", {
+      //   method: "POST",
+      //   body: formData,
+      // });
 
-      fetchVoices(); // refresh list after upload
+      api.post('/upload-voice', formData)
+      .then((res)=> console.log(res.data))
+      .catch((err)=> console.log(err));
+
+      fetchVoices();
     };
 
     mediaRecorderRef.current.start();

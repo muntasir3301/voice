@@ -4,10 +4,13 @@ import { FaCheck, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import { useRef, useState } from "react";
 import Link from "next/link";
+import api from "@/utils/axiosConfig";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [loading, setLoading] = useState<boolean>();
   const emailRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
 
   // States
   const [showPass, setShowPass] = useState(false);
@@ -26,10 +29,19 @@ export default function Login() {
     setErrMsg("");
     setLoading(true);
 
+    api.post('/users/login', {email, password})
+    .then((res)=> {
+      console.log(res.data)
 
-    console.log(email, password);
+      // Example after login request
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
-
+      window.location.reload();
+      router.push("/")
+    })
+    .catch(()=> setErrMsg("Error on login"))
+    .finally(()=> setLoading(false));
   };
 
 

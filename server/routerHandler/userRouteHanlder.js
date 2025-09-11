@@ -59,6 +59,22 @@ const User = require("../schemaModel/userSchemaModel"); // path to your model
 const router = express.Router();
 
 
+
+const verifyToken = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+
+  if (!token) return res.status(401).json({ error: "Access denied" });
+
+  jwt.verify(token, process.env.JWT_SECRET || "mysecretkey", (err, decoded) => {
+    if (err) return res.status(403).json({ error: "Invalid token" });
+    req.user = decoded; // attach user info to request
+    next();
+  });
+};
+
+
+
 // // Get all users
 router.get("/", async (req, res) => {
   try {
@@ -86,21 +102,54 @@ router.post("/register", async (req, res) => {
   }
 });
 
+// router.post("/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     const user = await User.findOne({ email });
+//     if (!user) return res.status(400).json({ error: "Invalid email or password" });
+
+//     const isMatch = await user.comparePassword(password);
+//     if (!isMatch) return res.status(400).json({ error: "Invalid email or password" });
+
+//     res.json({ message: "Login successful", user: { id: user._id, email: user.email } });
+//   } catch (err) {
+//     res.status(500).json({ error: "Error logging in" });
+//   }
+// });
+
+
+const jwt = require("jsonwebtoken");
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // find user
     const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ error: "Invalid email or password" });
 
+    // compare password
     const isMatch = await user.comparePassword(password);
     if (!isMatch) return res.status(400).json({ error: "Invalid email or password" });
 
-    res.json({ message: "Login successful", user: { id: user._id, email: user.email } });
+    // generate token
+    const token = jwt.sign(
+      { id: user._id, email: user.email },   // payload
+      process.env.JWT_SECRET || "mysecretkey", // secret key
+      { expiresIn: "1h" } // token expiry
+    );
+
+    res.json({ 
+      message: "Login successful", 
+      token, 
+      user: { id: user._id, name: user.name, email: user.email } 
+    });
   } catch (err) {
     res.status(500).json({ error: "Error logging in" });
   }
 });
+
 
 module.exports = router;
 

@@ -9,8 +9,6 @@ import Link from "next/link";
 export default function Header() {
   const pages = [
     { name: "Home", href: "/" },
-    { name: "Login", href: "/login" },
-    { name: "Register", href: "/register" },
   ];
 
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +19,18 @@ export default function Header() {
     setIsOpen(false);
   }, [pathname]);
 
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  const handleLogout =()=>{
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+  }
+
+
   return (
     <header className="border">
       <div className="container flex shrink-0 items-center h-16">
@@ -28,6 +38,7 @@ export default function Header() {
         <Link href="/" className="mr-6" prefetch={false}>
            <h2 className="text-xl">Voice Collecting</h2>
         </Link>
+
 
         {/* Desktop Menu ======================== */}
         <nav className="ml-auto hidden lg:flex gap-2">
@@ -40,7 +51,38 @@ export default function Header() {
             >
               {ele.name}
             </Link>
-          ))}
+          ))} 
+
+
+          {/* login  */}
+            {
+              user ? 
+              <Link
+              href={'/login'}
+              className="group text-sm inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+              prefetch={false}
+              onClick={handleLogout}
+            >
+              Logout
+            </Link>
+            :
+            <>
+              <Link
+                href={'/login'}
+                className="group text-sm inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+                prefetch={false}
+              >
+              Login
+            </Link>
+            <Link
+                href={'/register'}
+                className="group text-sm inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+                prefetch={false}
+              >
+              Register
+            </Link>
+            </>
+            }
         </nav>
 
         {/* Mobile Menu ======================== */}
