@@ -2,16 +2,16 @@
 
 import { FaCheck, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { MdOutlineErrorOutline } from "react-icons/md";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectGroup,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 
 export default function Register() {
@@ -19,47 +19,32 @@ export default function Register() {
     const [showPass, setShowPass] = useState(false);
     const [successMsg, setSuccessMsg] = useState('');
     const [errMsg, setErrMsg] = useState('');
-    // const [allBatch, setAllBatch] = useState<allBatchType[]>([]);
-    // const [batch, setBatch] = useState("");
-    // const [tShirtSize, setTshirtSize] = useState("");
-    // const [file, setFile] = useState<File | null>(null);
-    const [uploading, setUploading] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const [user, setUser] = useState("");
     // const router = useRouter();
 
-    // Use Context
-
-    useEffect(()=>{
-    },[])
 
 
     const handleSubmit = async(e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
-        const form = e.target as HTMLFormElement;
-        const stuId = (form.elements.namedItem("stuId") as HTMLInputElement)?.value;
-        const phone = (form.elements.namedItem("phone") as HTMLInputElement)?.value;
-
-        if(stuId.length!=4){
-          alert("Student Id must be last 4 digit!");
-          return;
-        }
-        if(phone.length!=11){
-          alert("Phone number must be 11 digit!");
-          return;
-        }
- 
-
-        // Always Clear Messages
         setSuccessMsg('');
         setErrMsg('');
-        setUploading(true);
+        setLoading(true);
+        
+        const form = e.target as HTMLFormElement;
+        const name = (form.elements.namedItem("name") as HTMLInputElement)?.value;
+        const age = (form.elements.namedItem("age") as HTMLInputElement)?.value;
+        const address = (form.elements.namedItem("address") as HTMLInputElement)?.value;
+        const email = (form.elements.namedItem("email") as HTMLInputElement)?.value;
+        const password = (e.target as HTMLFormElement).password.value;
 
+        const userData = {name, age, address, user, email, password};
+        
+        console.log(userData)
         
 
-        // const name = (form.elements.namedItem("name") as HTMLInputElement)?.value;
-        // const email = (form.elements.namedItem("email") as HTMLInputElement)?.value;
-        // const password = (e.target as HTMLFormElement).password.value;
-        // const options = { maxSizeMB: 2, maxWidthOrHeight: 1024 };
-        
+        setLoading(false);
     }
 
 
@@ -92,66 +77,62 @@ export default function Register() {
               </div>
 
               {/* Select t-Shirt Size  */}
-              {/* <Select onValueChange={(value) => setTshirtSize(value)}>
+              <Select onValueChange={(value: string) => setUser(value)}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="T-shirt Sizes" />
+                  <SelectValue placeholder="Select a user" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    <SelectItem value="S">S</SelectItem>
-                    <SelectItem value="M">M</SelectItem>
-                    <SelectItem value="L">L</SelectItem>
-                    <SelectItem value="XL">XL</SelectItem>
-                    <SelectItem value="XXL">XXL</SelectItem>
-                    <SelectItem value="XXXL">XXXL</SelectItem>
-                    <SelectItem value="XXXXL">XXXXL</SelectItem>
+                    <SelectItem value="one">User One</SelectItem>
+                    <SelectItem value="two">User Two</SelectItem>
+                    <SelectItem value="three">User three</SelectItem>
+                    <SelectItem value="four">User Four</SelectItem>
                   </SelectGroup>
                   </SelectContent>
-              </Select> */}
+              </Select>
 
-              {/* Student Id */}
+              {/* Student Age */}
               <div>
-                <label htmlFor="stuId" className="block text-sm font-medium leading-6">
-                  Student Id (Last 4 Digit)
+                <label htmlFor="age" className="block text-sm font-medium leading-6">
+                  Age
                 </label>
                 <div className="mt-2">
                   <input
-                    id="stuId"
-                    name="stuId"
+                    id="age"
+                    name="age"
                     type="text"
                     inputMode="numeric"
                     required
-                    placeholder="Inter your 4 digit student id"
+                    placeholder="Inter your age"
                     className="block px-4 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
                   />
                 </div>
               </div>
 
-              {/* Phone Number  */}
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium leading-6">
-                  Phone Number
+
+               {/* Address  */}
+              <div className="pb-1">
+                <label htmlFor="address" className="block text-sm font-medium leading-6">
+                  Address
                 </label>
                 <div className="mt-2">
                   <input
-                    id="phone"
-                    name="phone"
-                    type="string"
-                    inputMode="numeric"
+                    id="address"
+                    name="address"
+                    type="text"
                     required
-                    autoComplete="on"
-                    placeholder="Inter your phone number"
+                    placeholder="Inter your address"
                     className="block px-4 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
                   />
                 </div>
               </div>
+
 
               {/* Email address  */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium leading-6">
                   Email address (Valid)
                 </label>
-                <span className="text-sm text-gray-500">We will send an email verification link</span>
                 <div className="mt-2">
                   <input
                     id="email"
@@ -196,9 +177,9 @@ export default function Register() {
               <div style={{marginTop: '15px'}}>
                 <button
                   type="submit"
-                  className="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-black shadow-sm hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  className="flex w-full justify-center rounded-md bg-primary px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-teal-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
-                  {uploading ? (
+                  {loading ? (
                     <span className="flex items-center justify-center">
                       <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
