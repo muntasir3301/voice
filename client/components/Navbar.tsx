@@ -6,12 +6,11 @@ import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function Header_1() {
+export default function Header() {
   const pages = [
     { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
-    { name: "Services", href: "/service" },
-    { name: "Contact", href: "/contact" },
+    { name: "Login", href: "/login" },
+    { name: "Register", href: "/register" },
   ];
 
   const [isOpen, setIsOpen] = useState(false);
@@ -27,7 +26,7 @@ export default function Header_1() {
       <div className="container flex shrink-0 items-center h-16">
         {/* Logo ========================  */}
         <Link href="/" className="mr-6" prefetch={false}>
-          <Logo/>
+           <h2 className="text-xl">Voice Collecting</h2>
         </Link>
 
         {/* Desktop Menu ======================== */}
@@ -57,7 +56,7 @@ export default function Header_1() {
           <SheetContent side="left">
             {/* Menu title */}
             <Link href="#" className="mr-6 lg:flex" prefetch={false}>
-              <Logo />
+               <h2 className="text-xl">Voice Collecting</h2>
             </Link>
 
             {/* Menu links */}
@@ -77,7 +76,7 @@ export default function Header_1() {
         </Sheet>
       </div>
     </header>
-  );
+  )
 }
 
 function MenuIcon() {
@@ -99,13 +98,6 @@ function MenuIcon() {
         <line x1="4" x2="20" y1="18" y2="18" />
       </svg>
     </div>
-  );
+  )
 }
 
-function Logo() {
-  return(
-    <div className=" h-6 w-6">
-        <h2 className="text-2xl">Muntasir</h2>;
-    </div>
-  )   
-}
