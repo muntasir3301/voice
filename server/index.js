@@ -19,6 +19,10 @@ mongoose.connect(uri)
 
 
 
+const userHanlder = require('./routerHandler/userRouteHanlder');
+
+app.use('/users', userHanlder);
+
 const voiceSchema = new mongoose.Schema({
   audio: Buffer,
   contentType: String,
