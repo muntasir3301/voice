@@ -19,10 +19,18 @@ export default function Header() {
     setIsOpen(false);
   }, [pathname]);
 
-  const [user, setUser] = useState(() => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+  if (typeof window !== "undefined") {
     const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : null;
-  });
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }
+}, []);
+
+
 
   const handleLogout =()=>{
     localStorage.removeItem("token");
