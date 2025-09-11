@@ -28,10 +28,14 @@ const voiceSchema = new mongoose.Schema({
   contentType: String,
 });
 
+const subVoiceSchema = new mongoose.Schema({
+  audio: Buffer,
+});
+
 const Voice = mongoose.model("Voice", voiceSchema);
+const SubVoice = mongoose.model("SubVoice", subVoiceSchema);
 
 app.post("/upload-voice", upload.single("voice"), async (req, res) => {
-    console.log("voiceing");
 
   try {
     if (!req.file) {
@@ -43,7 +47,6 @@ app.post("/upload-voice", upload.single("voice"), async (req, res) => {
       contentType: req.file.mimetype,
     });
 
-    console.log(voice)
     await voice.save();
     res.json({ message: "Voice saved!" });
   } catch (err) {

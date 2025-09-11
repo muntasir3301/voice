@@ -1,19 +1,28 @@
 "use client";
 import api from "@/utils/axiosConfig";
 import { useState, useRef, useEffect } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 
 export default function VoiceRecorder() {
   const [recording, setRecording] = useState(false);
   const [voices, setVoices] = useState<{ id: string; contentType: string; audio: string }[]>([]);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
+  const [sentence, setSentence] = useState("");
 
   const fetchVoices = async () => {
     // const res = await fetch("http://localhost:5000/voices");
     // const res = await fetch("https://server-mu-ochre-55.vercel.app/voices");
     // const data = await res.json();
     // setVoices(data);
-
     api.get('/voices')
     .then((res)=> setVoices(res.data))
     .catch((err)=> console.log(err));
@@ -38,6 +47,8 @@ export default function VoiceRecorder() {
       const formData = new FormData();
       formData.append("voice", audioBlob, "recording.webm");
 
+      console.log(sentence);
+
       // await fetch("http://localhost:5000/upload-voice", {
       // await fetch("https://server-mu-ochre-55.vercel.app/upload-voice", {
       //   method: "POST",
@@ -61,8 +72,28 @@ export default function VoiceRecorder() {
   };
 
   return (
-    <div>
-      <div className="py-12">
+    <section className="container py-12">
+      <div className="flex justify-between">
+
+        <div className="w-60">
+          {/* Select t-Shirt Size  */}
+              <Select  onValueChange={(value: string) => setSentence(value)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a Sentence" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="one">Sentence One</SelectItem>
+                    <SelectItem value="two">Sentence Two</SelectItem>
+                    <SelectItem value="three">Sentence three</SelectItem>
+                    <SelectItem value="four">Sentence Four</SelectItem>
+                  </SelectGroup>
+                  </SelectContent>
+              </Select>
+        </div>
+
+
+
         {recording ? (
         <button onClick={stopRecording}>Stop</button>
         ) : (
@@ -79,6 +110,6 @@ export default function VoiceRecorder() {
           />
         </div>
       ))}
-    </div>
+    </section>
   );
 }
