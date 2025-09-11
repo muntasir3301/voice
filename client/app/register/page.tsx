@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import api from "@/utils/axiosConfig";
 
 
 export default function Register() {
@@ -41,8 +42,11 @@ export default function Register() {
 
         const userData = {name, age, address, user, email, password};
         
-        console.log(userData)
-        
+        api.post('/users/register', userData)
+        .then(()=>{
+          console.log("successfull")
+        })
+        .catch(()=> console.log("Error On Register"))
 
         setLoading(false);
     }
