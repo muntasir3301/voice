@@ -33,6 +33,7 @@ const voiceSchema = new mongoose.Schema({
 const voiceDataSchema = new mongoose.Schema({
   userId:  { type: String, required: true },
   voiceId:  { type: String, required: true },
+  sentenceId:  { type: String, required: true },
   length:  { type: Number, required: true },
   sentence:  { type: String, required: true }
 }, {versionKey: false});
@@ -48,7 +49,7 @@ app.post("/upload-voice", upload.single("voice"), async (req, res) => {
     }
     
     const length =  parseInt(req.body.length);
-    const {userId, sentence} = req.body;
+    const {userId, sentence, sentenceId} = req.body;
     const voiceId = new mongoose.Types.ObjectId();
 
     const voice = new Voice({
@@ -57,12 +58,12 @@ app.post("/upload-voice", upload.single("voice"), async (req, res) => {
       contentType: req.file.mimetype,
     });
 
-    await voice.save();
+    const result =  await voice.save();
 
-    await voiceData({userId, voiceId, length, sentence}).save();
+    await voiceData({userId, voiceId, sentenceId, length, sentence}).save();
 
     
-    res.json({ message: "Voice saved!" });
+    res.json(result);
   } catch (err) {
     console.error("Error saving voice:", err);
     res.status(500).json({ error: "Error saving voice" });

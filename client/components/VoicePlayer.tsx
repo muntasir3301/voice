@@ -1,5 +1,6 @@
 import api from "@/utils/axiosConfig";
 import { useState, useRef, useEffect } from "react";
+import { FaPause, FaPlay } from "react-icons/fa";
 
 interface VoicePlayerProps {
   voiceId: string;
@@ -89,14 +90,7 @@ const VoicePlayer = ({ voiceId, length }: VoicePlayerProps) => {
 
 
   return (
-    <div className="w-60 max-w-md p-4 bg-gray-100 rounded shadow flex items-center gap-4">
-      <button
-        onClick={togglePlay}
-        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-      >
-        {isPlaying ? "Pause" : "Play"}
-      </button>
-
+    <div className="w-80 max-w-md py-2 px-4 my-2 bg-gray-100 rounded shadow flex items-center gap-4">
       <div className="flex-1">
         <div className="h-2 bg-gray-300 rounded overflow-hidden mb-1">
           <div
@@ -104,11 +98,18 @@ const VoicePlayer = ({ voiceId, length }: VoicePlayerProps) => {
             style={{ width: `${progress * 100}%` }}
           ></div>
         </div>
-        <div className="text-sm text-gray-700 flex justify-between">
+        <div className="text-xs text-gray-700 flex justify-between">
           <span>{formatTime(progress * length)}</span>
           <span>{formatTime(length)}</span>
         </div>
       </div>
+
+      <button
+        onClick={togglePlay}
+        className="px-3 py-2 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
+      >
+        {isPlaying ? <FaPause/> : <FaPlay/>}
+      </button>
     </div>
   );
 };

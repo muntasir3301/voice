@@ -14,15 +14,19 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { MdKeyboardVoice, MdSend } from "react-icons/md";
 
 
 type VoiceDataType ={
-  name: string; userId: string; voiceId: string; length: number;
+  name: string;
+  userId: string;
+  voiceId: string;
+  sentenceId: string;
+  length: number;
   sentence: string;
 }
 
@@ -32,19 +36,26 @@ export default function VoiceRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunks = useRef<Blob[]>([]);
   const [user, setUser] = useState<{id: string; name: string}>();
-  const [sentence, setSentence] = useState("");
-  const [allSentence, setAllSentence] = useState<{text: string}[]>([]);
+  const [selectSentence, setSelectSentence] = useState("");
+  const [currentSentence, setCurrentSentence] = useState<{text: string, _id: string}[]>([]);
 
 
   useEffect(() => {
     api.get('/voice-data')
-    .then((res)=> setVoiceData(res.data))
+    .then((voice)=>{
+      api.get('/sentence')
+      .then((res)=>{
+          const restOfTheSentence = res.data.filter(
+              (ele: {_id: string}) => !voice.data.find((item: {sentenceId: string}) => item.sentenceId === ele._id)
+            );
+            setCurrentSentence(restOfTheSentence)
+          })
+          .catch((err)=> console.log(err)); 
+
+          setVoiceData(voice.data)
+      })
     .catch((err)=> console.log(err));
 
-
-    api.get('/sentence')
-    .then((res)=> setAllSentence(res.data))
-    .catch((err)=> console.log(err));
   }, []);
 
   useEffect(() => {
@@ -63,7 +74,7 @@ export default function VoiceRecorder() {
       return;
     }
 
-    if(!sentence){
+    if(!selectSentence){
       alert("Choice a sentence");
       return;
     }
@@ -85,17 +96,32 @@ export default function VoiceRecorder() {
       // Create a temporary audio element
         const audioUrl = URL.createObjectURL(audioBlob);
         const audio = new Audio(audioUrl);
+        const {_id, text:sentence }  = JSON.parse(selectSentence);
         
         audio.onloadedmetadata = () => {
           formData.append("length", audio.duration.toString());
           formData.append("userId", user.id);
           formData.append("sentence", sentence);
+          formData.append("sentenceId", _id);
+
+         
+
 
           api.post('/upload-voice', formData)
-          .then((res)=> console.log(res.data))
+          .then((res)=>{
+             const newVoice = {
+                name: user.name,
+                userId: user.id,
+                voiceId: res.data._id,
+                sentenceId: _id,
+                length: audio.duration,
+                sentence
+              }
+            setVoiceData([...voiceData, newVoice]);
+            const newSentence = currentSentence.filter((ele: {_id: string})=> ele._id !== _id)
+            setCurrentSentence(newSentence);
+          })
           .catch((err)=> console.log(err))
-          // .finally(()=>  fetchVoices() )
-
         };
     };
 
@@ -117,19 +143,19 @@ export default function VoiceRecorder() {
 
   return (
     <section className="container py-12">
-      <div className="flex justify-between">
+      <div className="flex justify-between items-center">
 
         <div className="w-60">
           {/* Select Sentence  */}
-              <Select  onValueChange={(value: string) => setSentence(value)}>
+              <Select  onValueChange={(value: string) => setSelectSentence(value)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a Sentence" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     {
-                      allSentence?.map((ele, i)=> 
-                        <SelectItem key={i+245} value={ele.text}>{ele.text}</SelectItem>
+                      currentSentence?.map((ele, i)=> 
+                        <SelectItem key={i+245} value={JSON.stringify(ele)}>{ele.text}</SelectItem>
                       )
                     }
                   </SelectGroup>
@@ -139,30 +165,38 @@ export default function VoiceRecorder() {
 
 
 
-        {recording ? (
-        <button onClick={stopRecording}>Stop</button>
-        ) : (
-          <button onClick={startRecording}>Start Recording</button>
-        )}
+        <div>
+          {recording ? (
+            <button className="flex gap-1 items-center border py-2 px-4 text-sm bg-blue-400 text-white rounded" onClick={stopRecording}>
+              <MdSend className="text-xl"/>
+              <div>Stop Record</div>
+            </button>
+          ) : (
+            <button className="flex gap-1 items-center border py-2 px-4 text-sm bg-blue-500 text-white rounded" onClick={startRecording}>
+              <MdKeyboardVoice className="text-xl"/>
+              <div>Start Record</div>
+            </button>
+          )}
+        </div>
       </div>
 
-<br /><br />
+<br />
 
 
-    <Table>
-      <TableHeader className="bg-gray-200">
+    <Table className="border">
+      <TableHeader className="bg-gray-300 text-black">
         <TableRow>
-          <TableHead className="w-[10%]">NO.</TableHead>
+          <TableHead className="w-[5%] text-center">NO.</TableHead>
           <TableHead className="w-[15%]">Name</TableHead>
           <TableHead className="w-[15%]">Author</TableHead>
-          <TableHead className="w-[30%]">Sentence</TableHead>
+          <TableHead className="w-[35%]">Sentence</TableHead>
           <TableHead className="w-[30%]">Listen</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
       {voiceData.map((data, i) => (
-        <TableRow key={data.userId}>
-          <TableCell>{i+1}</TableCell>
+        <TableRow key={i+48512} className={`${i%2==1 && "bg-gray-100"}`}>
+          <TableCell className="text-center">{i+1}</TableCell>
           <TableCell>{user?.name}</TableCell>
           <TableCell>Muntasir</TableCell>
           <TableCell>{data.sentence}</TableCell>
@@ -173,12 +207,6 @@ export default function VoiceRecorder() {
         </TableRow>
       ))}
       </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell colSpan={3}>Total</TableCell>
-          <TableCell className="text-right">$2,500.00</TableCell>
-        </TableRow>
-      </TableFooter>
     </Table>
 
     </section>
