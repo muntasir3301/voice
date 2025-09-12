@@ -22,9 +22,8 @@ export default function Register() {
     const [errMsg, setErrMsg] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const [user, setUser] = useState("");
+    const [author, setAuthor] = useState("");
     // const router = useRouter();
-
 
     const handleSubmit = async(e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
@@ -39,7 +38,7 @@ export default function Register() {
         const email = (form.elements.namedItem("email") as HTMLInputElement)?.value;
         const password = (e.target as HTMLFormElement).password.value;
 
-        const userData = {name, age, address, user, email, password};
+        const userData = {name, age, address, author, email, password};
         
         api.post('/users/register', userData)
         .then(()=>{
@@ -80,7 +79,7 @@ export default function Register() {
               </div>
 
               {/* Select t-Shirt Size  */}
-              <Select onValueChange={(value: string) => setUser(value)}>
+              <Select onValueChange={(value: string) => setAuthor(value)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a user" />
                 </SelectTrigger>

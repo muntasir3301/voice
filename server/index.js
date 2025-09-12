@@ -75,6 +75,10 @@ app.get("/voices", async (req, res) => {
 
 
 
+app.delete('/voice', async(req, res) => {
+  await Voice.deleteMany({});
+})
+
 // Home Route
 app.get('/', (req, res) => {
   res.send('Hello Blood Donors!')

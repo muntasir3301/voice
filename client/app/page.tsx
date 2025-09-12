@@ -19,10 +19,6 @@ export default function VoiceRecorder() {
   const [sentence, setSentence] = useState("");
 
   const fetchVoices = async () => {
-    // const res = await fetch("http://localhost:5000/voices");
-    // const res = await fetch("https://server-mu-ochre-55.vercel.app/voices");
-    // const data = await res.json();
-    // setVoices(data);
     api.get('/voices')
     .then((res)=> setVoices(res.data))
     .catch((err)=> console.log(err));
@@ -48,12 +44,13 @@ export default function VoiceRecorder() {
       formData.append("voice", audioBlob, "recording.webm");
 
       console.log(sentence);
-
-      // await fetch("http://localhost:5000/upload-voice", {
-      // await fetch("https://server-mu-ochre-55.vercel.app/upload-voice", {
-      //   method: "POST",
-      //   body: formData,
-      // });
+ // Create a temporary audio element
+  const audioUrl = URL.createObjectURL(audioBlob);
+  const audio = new Audio(audioUrl);
+  
+  audio.onloadedmetadata = () => {
+    console.log("Duration:", audio.duration, "seconds");
+  };
 
       api.post('/upload-voice', formData)
       .then((res)=> console.log(res.data))
