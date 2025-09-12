@@ -47,7 +47,6 @@ export default function VoiceRecorder() {
     .then((voice)=>{
       api.get('/sentence')
       .then((res)=>{
-        console.log("hi")
           const restOfTheSentence = res.data.filter(
               (ele: {_id: string}) => !voice.data.find((item: {sentenceId: string}) => item.sentenceId === ele._id)
             );
@@ -77,7 +76,7 @@ export default function VoiceRecorder() {
       return;
     }
 
-    if(!selectSentence){
+    if(!selectSentence || selectSentence === ""){
       alert("Choice a sentence");
       return;
     }
@@ -107,8 +106,6 @@ export default function VoiceRecorder() {
           formData.append("sentence", sentence);
           formData.append("sentenceId", _id);
 
-         
-
 
           api.post('/upload-voice', formData)
           .then((res)=>{
@@ -120,7 +117,8 @@ export default function VoiceRecorder() {
                 length: audio.duration,
                 sentence
               }
-            setVoiceData([...voiceData, newVoice]);
+            setVoiceData([newVoice, ...voiceData]);
+            setSelectSentence("");
             const newSentence = currentSentence.filter((ele: {_id: string})=> ele._id !== _id)
             setCurrentSentence(newSentence);
           })
