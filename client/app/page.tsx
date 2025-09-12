@@ -47,6 +47,7 @@ export default function VoiceRecorder() {
     .then((voice)=>{
       api.get('/sentence')
       .then((res)=>{
+        console.log("hi")
           const restOfTheSentence = res.data.filter(
               (ele: {_id: string}) => !voice.data.find((item: {sentenceId: string}) => item.sentenceId === ele._id)
             );
@@ -58,7 +59,7 @@ export default function VoiceRecorder() {
       })
     .catch((err)=> console.log(err));
 
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {

@@ -124,6 +124,9 @@ app.get("/voice-data/:userId", async (req, res) => {
   const {userId} = req.params;
   try {
     const data = await voiceData.find({userId});
+    if(!data){
+      res.json({message: "No voice data exists"})
+    }
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: "Error fetching voices" });
