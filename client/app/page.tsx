@@ -139,12 +139,18 @@ export default function VoiceRecorder() {
   // }
 
 
+  if(!user){
+    return <h2 className="py-20 container text-red-500">Login To Add a Voice ....</h2>
+  }
 
 
   return (
-    <section className="container py-12">
-      <div className="flex justify-between items-center">
+   <>
 
+
+
+     <section className="container py-12">
+      <div className="flex justify-between items-center">
         <div className="w-60">
           {/* Select Sentence  */}
               <Select  onValueChange={(value: string) => setSelectSentence(value)}>
@@ -163,8 +169,6 @@ export default function VoiceRecorder() {
               </Select>
         </div>
 
-
-
         <div>
           {recording ? (
             <button className="flex gap-1 items-center border py-2 px-4 text-sm bg-blue-400 text-white rounded" onClick={stopRecording}>
@@ -180,35 +184,37 @@ export default function VoiceRecorder() {
         </div>
       </div>
 
-<br />
+      <br />
+
+      <Table className="border">
+        <TableHeader className="bg-gray-300 text-black">
+          <TableRow>
+            <TableHead className="w-[5%] text-center">NO.</TableHead>
+            <TableHead className="w-[15%]">Name</TableHead>
+            <TableHead className="w-[15%]">Author</TableHead>
+            <TableHead className="w-[35%]">Sentence</TableHead>
+            <TableHead className="w-[30%]">Listen</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+        {voiceData.map((data, i) => (
+          <TableRow key={i+48512} className={`${i%2==1 && "bg-gray-100"}`}>
+            <TableCell className="text-center">{i+1}</TableCell>
+            <TableCell>{user?.name}</TableCell>
+            <TableCell>Muntasir</TableCell>
+            <TableCell>{data.sentence}</TableCell>
+            <TableCell className="text-center">
+              {/* Voice Player  */}
+              <VoicePlayer voiceId={data.voiceId} length={data.length}/>
+            </TableCell>
+          </TableRow>
+        ))}
+        </TableBody>
+      </Table>
+
+     </section>
 
 
-    <Table className="border">
-      <TableHeader className="bg-gray-300 text-black">
-        <TableRow>
-          <TableHead className="w-[5%] text-center">NO.</TableHead>
-          <TableHead className="w-[15%]">Name</TableHead>
-          <TableHead className="w-[15%]">Author</TableHead>
-          <TableHead className="w-[35%]">Sentence</TableHead>
-          <TableHead className="w-[30%]">Listen</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-      {voiceData.map((data, i) => (
-        <TableRow key={i+48512} className={`${i%2==1 && "bg-gray-100"}`}>
-          <TableCell className="text-center">{i+1}</TableCell>
-          <TableCell>{user?.name}</TableCell>
-          <TableCell>Muntasir</TableCell>
-          <TableCell>{data.sentence}</TableCell>
-          <TableCell className="text-center">
-            {/* Voice Player  */}
-            <VoicePlayer voiceId={data.voiceId} length={data.length}/>
-          </TableCell>
-        </TableRow>
-      ))}
-      </TableBody>
-    </Table>
-
-    </section>
+   </>
   );
 }
