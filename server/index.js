@@ -20,20 +20,25 @@ mongoose.connect(uri)
 
 
 const userHanlder = require('./routerHandler/userRouteHanlder');
+const sentenceHanlder = require('./routerHandler/sentenceRouteHandler');
 
 app.use('/users', userHanlder);
+app.use('/sentence', sentenceHanlder);
 
 const voiceSchema = new mongoose.Schema({
   audio: Buffer,
   contentType: String,
-});
+},{versionKey: false});
 
-const subVoiceSchema = new mongoose.Schema({
-  audio: Buffer,
-});
+const voiceDataSchema = new mongoose.Schema({
+  userId:  { type: String, required: true },
+  voiceId:  { type: String, required: true },
+  length:  { type: Number, required: true },
+  sentence:  { type: String, required: true }
+}, {versionKey: false});
 
 const Voice = mongoose.model("Voice", voiceSchema);
-const SubVoice = mongoose.model("SubVoice", subVoiceSchema);
+const voiceData = mongoose.model("VoiceData", voiceDataSchema);
 
 app.post("/upload-voice", upload.single("voice"), async (req, res) => {
 
@@ -41,13 +46,22 @@ app.post("/upload-voice", upload.single("voice"), async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
+    
+    const length =  parseInt(req.body.length);
+    const {userId, sentence} = req.body;
+    const voiceId = new mongoose.Types.ObjectId();
 
     const voice = new Voice({
+      _id: voiceId,
       audio: req.file.buffer,
       contentType: req.file.mimetype,
     });
 
     await voice.save();
+
+    await voiceData({userId, voiceId, length, sentence}).save();
+
+    
     res.json({ message: "Voice saved!" });
   } catch (err) {
     console.error("Error saving voice:", err);
@@ -58,10 +72,11 @@ app.post("/upload-voice", upload.single("voice"), async (req, res) => {
 
 app.get("/voices", async (req, res) => {
   try {
-    const voices = await Voice.find();
+    const voices = await Voice.find({});
 
     const voiceData = voices.map(v => ({
       id: v._id,
+      userId: v.userId,
       contentType: v.contentType,
       audio: v.audio.toString("base64"), // send as base64
     }));
@@ -69,6 +84,47 @@ app.get("/voices", async (req, res) => {
     res.json(voiceData);
   } catch (err) {
     console.error("Error fetching voices:", err);
+    res.status(500).json({ error: "Error fetching voices" });
+  }
+});
+
+app.get("/voices/:voiceId", async (req, res) => {
+  const { voiceId } = req.params;
+  try {
+    const voice = await Voice.findOne({_id: voiceId});
+    if (!voice) {
+      return res.status(404).json({ error: "Voice not found" });
+    }
+
+    const voiceData = {
+      _id: voice._id,
+      contentType: voice.contentType,
+      audio: voice.audio.toString("base64"),
+    };
+
+    res.json(voiceData);
+  } catch (err) {
+    console.error("Error fetching voices:", err);
+    res.status(500).json({ error: "Error fetching voices" });
+  }
+});
+
+
+app.get("/voice-data", async (req, res) => {
+  try {
+    const data = await voiceData.find({});
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching voices" });
+  }
+});
+
+
+app.delete("/voice-data", async (req, res) => {
+  try {
+    const data = await voiceData.deleteMany({});
+    res.json(data);
+  } catch (err) {
     res.status(500).json({ error: "Error fetching voices" });
   }
 });

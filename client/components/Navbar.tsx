@@ -21,7 +21,7 @@ export default function Header() {
 
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
+useEffect(() => {
   if (typeof window !== "undefined") {
     const savedUser = localStorage.getItem("user");
     if (savedUser) {
