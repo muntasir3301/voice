@@ -43,8 +43,9 @@ export default function Register() {
         api.post('/users/register', userData)
         .then(()=>{
           console.log("successfull")
+          setSuccessMsg("Successfully Regsiter")
         })
-        .catch(()=> console.log("Error On Register"))
+        .catch(()=> setErrMsg("Error On Register"))
         .finally(()=> setLoading(false))
     }
 
