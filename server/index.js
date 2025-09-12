@@ -120,6 +120,16 @@ app.get("/voice-data", async (req, res) => {
   }
 });
 
+app.get("/voice-data/:userId", async (req, res) => {
+  const {userId} = req.params;
+  try {
+    const data = await voiceData.find({userId});
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching voices" });
+  }
+});
+
 
 app.delete("/voice-data", async (req, res) => {
   try {

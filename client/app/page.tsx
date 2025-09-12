@@ -41,7 +41,9 @@ export default function VoiceRecorder() {
 
 
   useEffect(() => {
-    api.get('/voice-data')
+    if(!user) return;
+
+    api.get(`/voice-data/${user?.id}`)
     .then((voice)=>{
       api.get('/sentence')
       .then((res)=>{
