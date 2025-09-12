@@ -87,13 +87,14 @@ router.get("/", async (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
-    const { name, age, address, user, email, password } = req.body;
-    console.log(req.body); 
+    const { name, age, address, author, email, password } = req.body;
+    console.log(req.body);
+
 
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ error: "User already exists" });
 
-    const newUser = new User({name, age, address, user, email, password});
+    const newUser = new User({name, age, address, author, email, password});
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully" });

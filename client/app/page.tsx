@@ -147,8 +147,6 @@ export default function VoiceRecorder() {
   return (
    <>
 
-
-
      <section className="container py-12">
       <div className="flex justify-between items-center">
         <div className="w-60">

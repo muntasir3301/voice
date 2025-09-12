@@ -45,8 +45,7 @@ export default function Register() {
           console.log("successfull")
         })
         .catch(()=> console.log("Error On Register"))
-
-        setLoading(false);
+        .finally(()=> setLoading(false))
     }
 
 
