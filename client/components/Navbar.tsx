@@ -1,11 +1,10 @@
 "use client";
-
+import { MdRecordVoiceOver } from "react-icons/md";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Sheet, SheetTrigger, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
 export default function Header() {
   const pages = [
     { name: "Home", href: "/" },
@@ -40,55 +39,81 @@ useEffect(() => {
 
 
   return (
-    <header className="border">
-      <div className="container flex shrink-0 items-center h-16">
+    <header className="bg-primary py-4">
+      <div className="container flex shrink-0 items-center">
         {/* Logo ========================  */}
-        <Link href="/" className="mr-6" prefetch={false}>
-           <h2 className="text-xl">Voice Collecting</h2>
+        <Link href="/" className="flex items-center gap-4" prefetch={false}>
+           <MdRecordVoiceOver className="text-orange-500 text-3xl"/>
+           <h2 className="text-xl text-white">Voice Collecting</h2>
         </Link>
 
 
         {/* Desktop Menu ======================== */}
-        <nav className="ml-auto hidden lg:flex gap-2">
+        <nav className="ml-auto hidden lg:flex lg:items-center gap-3">
           {pages?.map((ele) => (
-            <Link
-              key={ele.name}
-              href={ele.href}
-              className="group text-sm inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
-              prefetch={false}
-            >
-              {ele.name}
-            </Link>
+            <div key={ele.name}>
+              <Link
+                href={ele.href}
+                className="group text-sm inline-flex w-max items-center justify-center rounded px-4 border text-white py-1.5 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+                prefetch={false}
+              >
+                {ele.name}
+              </Link>
+            </div>
           ))} 
 
 
           {/* login  */}
             {
               user ? 
-              <Link
-              href={'/login'}
-              className="group text-sm inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
-              prefetch={false}
-              onClick={handleLogout}
-            >
-              Logout
-            </Link>
+              <div>
+                <Link
+                  href={'/logout'}
+                  className="group text-[13px] inline-flex w-max items-center justify-center rounded px-4 bg-orange-500/60 border text-white py-1.5 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+                  prefetch={false}
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Link>
+              </div>
             :
             <>
+            <div>
               <Link
+                href={'/login'}
+                className="group text-[13px] inline-flex w-max items-center justify-center rounded px-4 bg-gray- border text-white py-1.5 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+                prefetch={false}
+              >
+                Login
+              </Link>
+            </div>
+              {/* <Link
                 href={'/login'}
                 className="group text-sm inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
                 prefetch={false}
               >
               Login
-            </Link>
-            <Link
+            </Link> */}
+
+            <div>
+              <Link
+                href={'/register'}
+                className="group text-[13px] inline-flex w-max items-center justify-center rounded px-3 text-white border py-1.5 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
+                prefetch={false}
+              >
+                Register
+              </Link>
+            </div>
+
+
+
+            {/* <Link
                 href={'/register'}
                 className="group text-sm inline-flex h-9 w-max items-center justify-center rounded-md bg-white px-4 py-2 font-medium transition-colors hover:bg-gray-100 hover:text-gray-900 focus:bg-gray-100 focus:text-gray-900 focus:outline-none disabled:pointer-events-none disabled:opacity-50 data-[active]:bg-gray-100/50 data-[state=open]:bg-gray-100/50 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus:bg-gray-800 dark:focus:text-gray-50 dark:data-[active]:bg-gray-800/50 dark:data-[state=open]:bg-gray-800/50"
                 prefetch={false}
               >
               Register
-            </Link>
+            </Link> */}
             </>
             }
         </nav>

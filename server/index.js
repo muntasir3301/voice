@@ -12,18 +12,40 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 
+
  
-mongoose.connect(uri)
-.then(()=> console.log("MongoDb Conneted Successfully"))
-.catch((err)=> console.log("Connection Error on mongodb"))
+// mongoose.connect(uri)
+// .then(()=> console.log("MongoDb Conneted Successfully"))
+// .catch((err)=> console.log("Connection Error on mongodb"))
+
+
+
+const { Pool } = require('pg');
+
+const pool = new Pool({
+  connectionString: uri,
+  ssl: { rejectUnauthorized: false },
+});
+
+pool.connect()
+  .then(client => {
+    console.log("PostgreSQL connected ✅");
+    client.release(); // release the client back to the pool
+  })
+  .catch(err => {
+    console.error("PostgreSQL connection error ❌", err);
+  });
+
 
 
 
 const userHanlder = require('./routerHandler/userRouteHanlder');
 const sentenceHanlder = require('./routerHandler/sentenceRouteHandler');
+const sql = require('./routerHandler/sql');
 
 app.use('/users', userHanlder);
 app.use('/sentence', sentenceHanlder);
+app.use('/sql', sql);
 
 const voiceSchema = new mongoose.Schema({
   audio: Buffer,

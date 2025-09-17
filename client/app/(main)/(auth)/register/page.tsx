@@ -4,14 +4,6 @@ import { FaCheck, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { MdOutlineErrorOutline } from "react-icons/md";
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import api from "@/utils/axiosConfig";
 
 
@@ -21,9 +13,6 @@ export default function Register() {
     const [successMsg, setSuccessMsg] = useState('');
     const [errMsg, setErrMsg] = useState('');
     const [loading, setLoading] = useState(false);
-
-    const [author, setAuthor] = useState("");
-    // const router = useRouter();
 
     const handleSubmit = async(e: FormEvent<HTMLFormElement>)=>{
         e.preventDefault();
@@ -38,7 +27,7 @@ export default function Register() {
         const email = (form.elements.namedItem("email") as HTMLInputElement)?.value;
         const password = (e.target as HTMLFormElement).password.value;
 
-        const userData = {name, age, address, author, email, password};
+        const userData = {name, age, address, email, password};
         
         api.post('/users/register', userData)
         .then(()=>{
@@ -61,37 +50,26 @@ export default function Register() {
   
           <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-sm">
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Name  */}
-              <div className="pb-1">
-                <label htmlFor="email" className="block text-sm font-medium leading-6">
-                  Your Name
+
+
+              {/* Refrence Code */}
+              <div>
+                <label htmlFor="refcode" className="block text-sm font-medium leading-6">
+                  Refrence Code
                 </label>
                 <div className="mt-2">
                   <input
-                    id="name"
-                    name="name"
-                    type="text"
+                    id="refcode"
+                    name="refcode"
+                    type="number"
+                    inputMode="numeric"
                     required
-                    placeholder="Inter your name"
+                    placeholder="Inter Your Refrence Code"
                     className="block px-4 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
                   />
                 </div>
               </div>
 
-              {/* Select t-Shirt Size  */}
-              <Select onValueChange={(value: string) => setAuthor(value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a user" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="one">User One</SelectItem>
-                    <SelectItem value="two">User Two</SelectItem>
-                    <SelectItem value="three">User three</SelectItem>
-                    <SelectItem value="four">User Four</SelectItem>
-                  </SelectGroup>
-                  </SelectContent>
-              </Select>
 
               {/* Student Age */}
               <div>
@@ -102,7 +80,7 @@ export default function Register() {
                   <input
                     id="age"
                     name="age"
-                    type="text"
+                    type="number"
                     inputMode="numeric"
                     required
                     placeholder="Inter your age"
@@ -112,36 +90,36 @@ export default function Register() {
               </div>
 
 
-               {/* Address  */}
+               {/* City  */}
               <div className="pb-1">
-                <label htmlFor="address" className="block text-sm font-medium leading-6">
-                  Address
+                <label htmlFor="city" className="block text-sm font-medium leading-6">
+                  City
                 </label>
                 <div className="mt-2">
                   <input
-                    id="address"
-                    name="address"
+                    id="city"
+                    name="city"
                     type="text"
                     required
-                    placeholder="Inter your address"
+                    placeholder="Inter your city"
                     className="block px-4 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
                   />
                 </div>
               </div>
 
 
-              {/* Email address  */}
+              {/* User Name  */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium leading-6">
-                  Email address (Valid)
+                <label htmlFor="username" className="block text-sm font-medium leading-6">
+                  Username
                 </label>
                 <div className="mt-2">
                   <input
-                    id="email"
-                    name="email"
-                    type="email"
+                    id="username"
+                    name="username"
+                    type="text"
                     required
-                    placeholder="Inter a valid email address"
+                    placeholder="Inter a username"
                     className="block px-4 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
                   />
                 </div>
@@ -174,8 +152,6 @@ export default function Register() {
                 </div>
               </div>
 
-              
-  
               <div style={{marginTop: '15px'}}>
                 <button
                   type="submit"
@@ -190,8 +166,6 @@ export default function Register() {
                       Creating...
                     </span>
                   ) : 'Create Account'}
-
-
                 </button>
 
                 {/* Success or Error Msg  */}
@@ -221,4 +195,3 @@ export default function Register() {
       </>
     )
   }
-  

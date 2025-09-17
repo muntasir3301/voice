@@ -3,9 +3,9 @@ import Link from 'next/link';
 
 function Footer() {
   return (
-    <div className="bg-gray-900">
-      <div className="max-w-2xl mx-auto text-white py-10">
-        <div className="text-center pb-20 pt-4">
+    <div className="bg-primary">
+      <div className="max-w-2xl mx-auto text-white pb-6 pt-12">
+        <div className="text-center pb-12">
           <h3 className="text-2xl mb-3">Your voice is data, your words are history.</h3>
           <p className='text-sm'>Voice data collection for academic research</p>
         </div>

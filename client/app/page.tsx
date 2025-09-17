@@ -19,6 +19,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { MdKeyboardVoice, MdSend } from "react-icons/md";
+import Header from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 
 type VoiceDataType ={
@@ -140,15 +142,16 @@ export default function VoiceRecorder() {
   // }
 
 
-  if(!user){
-    return <h2 className="py-20 container text-red-500">Login To Add a Voice ....</h2>
-  }
+  // if(!user){
+  //   return <h2 className="py-20 container text-red-500">Login To Add a Voice ....</h2>
+  // }
 
 
   return (
    <>
+    <Header/>
 
-     <section className="container py-12">
+     <section className="container py-12 min-h-[55vh]">
       <div className="flex justify-between items-center">
         <div className="w-60">
           {/* Select Sentence  */}
@@ -210,10 +213,9 @@ export default function VoiceRecorder() {
         ))}
         </TableBody>
       </Table>
-
      </section>
 
-
+     <Footer/>
    </>
   );
 }
