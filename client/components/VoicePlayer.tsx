@@ -3,7 +3,8 @@ import { FaPause, FaPlay } from "react-icons/fa";
 
 interface VoicePlayerProps {
   audioUrl: string;
-  audioLength: number
+  audioLength: number;
+  setAudioUrl: React.Dispatch<React.SetStateAction<string | null>>
 }
 
 declare global {
@@ -12,7 +13,7 @@ declare global {
   }
 }
 
-const VoicePlayer = ({audioUrl, audioLength}: VoicePlayerProps) => {
+const VoicePlayer = ({audioUrl, setAudioUrl, audioLength}: VoicePlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0); // 0 to 1
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -124,8 +125,8 @@ const VoicePlayer = ({audioUrl, audioLength}: VoicePlayerProps) => {
 
         <div className="flex items-center gap-4">
             <div><button className="bg-green-600 px-4 py-2 text-white rounded text-sm">Save</button></div>
-            {/* <div><button onClick={() => { setVoice(null); setAudioUrl(null);}} className="bg-red-600 px-4 py-2 text-white rounded text-sm">Cancel</button></div> */}
-            <div><button onClick={() => console.log("Hi")} className="bg-red-600 px-4 py-2 text-white rounded text-sm">Cancel</button></div>
+            <div><button onClick={() => { setAudioUrl(null);}} className="bg-red-600 px-4 py-2 text-white rounded text-sm">Cancel</button></div>
+            {/* <div><button onClick={() => console.log("Hi")} className="bg-red-600 px-4 py-2 text-white rounded text-sm">Cancel</button></div> */}
         </div>
     </section>
     </>

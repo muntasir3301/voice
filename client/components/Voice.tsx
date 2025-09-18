@@ -123,7 +123,7 @@ const startRecording = async () => {
     cancelAnimationFrame(animationId.current!);
 
     const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
-    setVoice(audioBlob);
+    // setVoice(audioBlob);
     const url = URL.createObjectURL(audioBlob);
     setAudioUrl(url); // preview url
 
@@ -172,7 +172,7 @@ const startRecording = async () => {
                                 <div>Stop Recoding</div>
                             </button>
                             ) : (
-                            <button className="flex gap-1 items-center border py-2 px-4 text-sm bg-blue-500 text-white rounded" onClick={startRecording}>
+                            <button className={`flex gap-1 items-center border py-2 px-4 text-sm bg-blue-600 text-white rounded ${audioUrl ? "cursor-not-allowed bg-red-400" : ""}`} disabled={!!audioUrl}  onClick={startRecording}>
                                 <MdKeyboardVoice className="text-xl"/>
                                 <div>Start Recoding</div>
                             </button>
@@ -181,7 +181,7 @@ const startRecording = async () => {
                 </div>
                 {/* Lister Record */}
                 {
-                    audioUrl && <VoicePlayer audioUrl={audioUrl} audioLength={audioLength}/>
+                    audioUrl && <VoicePlayer setAudioUrl={setAudioUrl} audioUrl={audioUrl} audioLength={audioLength}/>
                 }
                 <hr className="my-5"/>
                 <div className="flex justify-between items-center">
@@ -194,6 +194,38 @@ const startRecording = async () => {
             </div>
             </div>
         </div>
+
+{/* 
+{audioUrl && (
+  <div>
+    <audio controls src={audioUrl} />
+    <div className="flex gap-3 mt-2">
+      <button
+        className="bg-green-600 px-3 py-1 text-white rounded"
+        onClick={() => {
+          // send to backend
+          const formData = new FormData();
+          formData.append("voice", voice!);
+          // api.post("/upload-voice", formData)
+          console.log("✅ Saved to DB");
+        }}
+      >
+        Save
+      </button>
+      <button
+        className="bg-red-600 px-3 py-1 text-white rounded"
+        onClick={() => {
+          setVoice(null);
+          setAudioUrl(null);
+          console.log("❌ Discarded");
+        }}
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+)} */}
+
     </section>
   );
 }
