@@ -2,15 +2,12 @@
 
 import { FaCheck, FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { MdOutlineErrorOutline } from "react-icons/md";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import api from "@/utils/axiosConfig";
-import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [loading, setLoading] = useState<boolean>();
-  const emailRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
 
   // States
   const [showPass, setShowPass] = useState(false);
@@ -21,7 +18,7 @@ export default function Login() {
   const handleSubmit = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const email = form.email.value;
+    const username = form.username.value;
     const password = form.password.value;
 
     // Always Clear Messages
@@ -29,34 +26,27 @@ export default function Login() {
     setErrMsg("");
     setLoading(true);
 
-    api.post('/users/login', {email, password})
+    api.post('/users/login', {username, password})
     .then((res)=> {
-      console.log(res.data)
-
       // Example after login request
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-      window.location.reload();
-      router.push("/")
+      // window.location.reload();
+      // router.push("/")
+        // window.location.href = "/"; 
     })
-    .catch(()=> setErrMsg("Error on login"))
+    .catch((err)=>{
+      const serverMsg = err.response?.data?.error || "Something went wrong. Try again!";
+      setErrMsg(serverMsg);
+    })
     .finally(()=> setLoading(false));
   };
 
 
 
   const handleForgetPass = () => {
-    const email = emailRef.current?.value;
-    if(!email){
-      alert("Enter your email address");
-      return;
-    }
-
-    //Reset Messages
-    setErrMsg("");
-    setSuccessMsg("");
-
+    alert("Please contact with admin!")
   };
 
   return (
@@ -72,20 +62,18 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label
-                htmlFor="email"
+                htmlFor="username"
                 className="block text-sm font-medium leading-6"
               >
-                Email address
+                Username
               </label>
               <div className="mt-2">
                 <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  ref={emailRef}
-                  placeholder="Inter your email address"
+                  id="username"
+                  name="username"
+                  type="text"
+                  placeholder="Inter your username"
                   required
-                  autoComplete="email"
                   className="block px-4 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary sm:leading-6"
                 />
               </div>

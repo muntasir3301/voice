@@ -1,15 +1,7 @@
 "use client";
 import api from "@/utils/axiosConfig";
 import { useState, useRef, useEffect } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import VoicePlayer from "@/components/VoicePlayer";
+// import VoicePlayer from "@/components/VoicePlayer";
 import {
   Table,
   TableBody,
@@ -21,6 +13,7 @@ import {
 import { MdKeyboardVoice, MdSend } from "react-icons/md";
 import Header from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import AudioRecorderUI from "@/components/Voice";
 
 
 type VoiceDataType ={
@@ -150,28 +143,10 @@ export default function VoiceRecorder() {
   return (
    <>
     <Header/>
-
-     <section className="container py-12 min-h-[55vh]">
-      <div className="flex justify-between items-center">
-        <div className="w-60">
-          {/* Select Sentence  */}
-              <Select  onValueChange={(value: string) => setSelectSentence(value)}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select a Sentence" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {
-                      currentSentence?.map((ele, i)=> 
-                        <SelectItem key={i+245} value={JSON.stringify(ele)}>{ele.text}</SelectItem>
-                      )
-                    }
-                  </SelectGroup>
-                  </SelectContent>
-              </Select>
-        </div>
-
-        <div>
+      <div className="">
+          <div className="w-60">
+          </div>
+          <div>
           {recording ? (
             <button className="flex gap-1 items-center border py-2 px-4 text-sm bg-blue-400 text-white rounded" onClick={stopRecording}>
               <MdSend className="text-xl"/>
@@ -186,8 +161,37 @@ export default function VoiceRecorder() {
         </div>
       </div>
 
-      <br />
+    <section className="py-12">
+      <div className="container">
+            <div className="flex justify-center">
+              <div>
+                 {/* <h2 className="text-3xl mb-5">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</h2> */}
+                {/* <div className="flex justify-center">
+                    {recording ? (
+                      <button className="flex gap-1 items-center border py-2 px-4 text-sm bg-blue-400 text-white rounded" onClick={stopRecording}>
+                        <MdSend className="text-xl"/>
+                        <div>Stop Record</div>
+                      </button>
+                    ) : (
+                      <button className=" gap-1 items-center border py-2 px-4 text-sm bg-blue-500 text-white rounded" onClick={startRecording}>
+                        <MdKeyboardVoice className="text-5xl"/>
+                        <div>Start</div>
+                      </button>
+                    )}
+                </div> */}
+              </div>
+            </div>
+      </div>
+    </section>
 
+    <AudioRecorderUI/>
+
+        
+
+<br /><br /><br />
+      
+     <section className="container py-12 min-h-[55vh]">
+      {/* Statics  base on the user role */}
       <Table className="border">
         <TableHeader className="bg-gray-300 text-black">
           <TableRow>
@@ -207,7 +211,7 @@ export default function VoiceRecorder() {
             <TableCell>{data.sentence}</TableCell>
             <TableCell className="text-center">
               {/* Voice Player  */}
-              <VoicePlayer voiceId={data.voiceId} length={data.length}/>
+              {/* <VoicePlayer voiceId={data.voiceId} length={data.length}/> */}
             </TableCell>
           </TableRow>
         ))}

@@ -1,0 +1,62 @@
+datasource db {
+  provider = "postgresql"   // or "mysql" / "sqlite"
+  url      = env("DB_URI")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole{
+    user
+    admin
+    super_admin
+}
+
+model User{
+  id       Int      @id @default(autoincrement())
+  role     UserRole   @default(user)
+  count    Int     @default(0)
+  username String   @unique
+  password String
+
+  profile UserProfile?
+}
+
+model UserProfile{
+  id   Int   @id @default(autoincrement())
+  user_id Int @unique
+  city String
+  age Int
+
+  user User @relation(fields: [user_id], references: [id])
+}
+
+
+
+model AdminProfile{
+    id Int @id @default(autoincrement())
+    user_id Int @unique
+    name String
+    email String
+    address String
+    phone String
+    university String
+
+    
+}
+
+model SuperAdminProfile{
+    id Int @id @default(autoincrement())
+    user_id Int @unique
+    name String
+}
+
+
+// User 
+// {
+//     "role": "admin",
+//     "age" : 22,
+//     username: "johfa",
+//     password: "1234jf"
+// }

@@ -20,21 +20,23 @@ export default function Register() {
         setErrMsg('');
         setLoading(true);
         
-        const form = e.target as HTMLFormElement;
-        const name = (form.elements.namedItem("name") as HTMLInputElement)?.value;
-        const age = (form.elements.namedItem("age") as HTMLInputElement)?.value;
-        const address = (form.elements.namedItem("address") as HTMLInputElement)?.value;
-        const email = (form.elements.namedItem("email") as HTMLInputElement)?.value;
-        const password = (e.target as HTMLFormElement).password.value;
+        const form = e.currentTarget;
+        const age = parseInt(form.age.value);
+        const city = form.city.value;
+        const username = form.username.value;
+        const password = form.password.value;
 
-        const userData = {name, age, address, email, password};
+        const userData = {age, city, username, password};
         
         api.post('/users/register', userData)
         .then(()=>{
           console.log("successfull")
           setSuccessMsg("Successfully Regsiter")
         })
-        .catch(()=> setErrMsg("Error On Register"))
+        .catch((err)=>{
+          const serverMsg = err.response?.data?.message || "Something went wrong. Try again!";
+          setErrMsg(serverMsg);
+        })
         .finally(()=> setLoading(false))
     }
 
