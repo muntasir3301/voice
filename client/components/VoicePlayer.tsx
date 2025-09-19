@@ -3,8 +3,9 @@ import { useState, useRef, useEffect } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 
 interface VoicePlayerProps {
-  voiceId: string;
+  voice_id: number;
   length: number; 
+  id: number;
 }
 
 declare global {
@@ -13,80 +14,19 @@ declare global {
   }
 }
 
-const VoicePlayer = ({voiceId, length }: VoicePlayerProps) => {
+const VoicePlayer = ({voice_id, length }: VoicePlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0); // 0 to 1
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [voice, setVoice] = useState<{contentType: string; record: string} | undefined>();
-
-  // useEffect(()=>{
-
-  //   api.get(`/voices/${voiceId}`)
-  //   .then((res)=> setVoice(res.data))
-  // },[])
-
-
-  
-  // const togglePlay = () => {
-
-    
-  //   // api.get(`/voices/${voiceId}`)
-  //   api.get(`/voices/2`)
-  //   .then((res)=> {
-  //     console.log(res.data);
-  //     setVoice(res.data)
-  //   })
-
-  //   if (!voice) return;
-
-  //   // Stop any other audio globally
-  //     if (window.currentAudio && window.currentAudio !== audioRef.current) {
-  //           window.currentAudio.pause();
-  //           window.currentAudio.currentTime = 0;
-
-  //           window.dispatchEvent(new Event("audioStopped"));
-            
-  //       }
-
-
-  //   if (!audioRef.current) {
-  //     const audioSrc = `data:${voice?.contentType};base64,${voice?.record}`;
-  //     audioRef.current = new Audio(audioSrc);
-
-
-  //     // Update progress
-  //     audioRef.current.ontimeupdate = () => {
-  //       setProgress(audioRef.current!.currentTime / length);
-  //     };
-
-  //     audioRef.current.onended = () => {
-  //       setIsPlaying(false);
-  //       setProgress(0);
-
-  //       if (window.currentAudio === audioRef.current) {
-  //           window.currentAudio = null;
-  //       }
-  //     };
-  //   }
-
-  //   if (isPlaying) {
-  //     audioRef.current.pause();
-  //   } else {
-  //   //   stopCurrentAudio();
-  //     audioRef.current.play();
-
-  //     window.currentAudio = audioRef.current; 
-  //   }
-  //   setIsPlaying(!isPlaying);
-  // };
+  // const [voice, setVoice] = useState<{contentType: string; record: string} | undefined>();
 
 
   const togglePlay = async () => {
   if (!audioRef.current) {
     try {
-      const res = await api.get(`/voices/${voiceId}`);
+      const res = await api.get(`/voices/${voice_id}`);
       const voiceData = res.data;
-      setVoice(voiceData);
+      // setVoice(voiceData);
 
       const audioSrc = `data:${voiceData.contentType};base64,${voiceData.record}`;
       audioRef.current = new Audio(audioSrc);
@@ -147,8 +87,10 @@ const VoicePlayer = ({voiceId, length }: VoicePlayerProps) => {
 }, []);
 
 
+
+
+
   return (
-   <div className="flex gap-10">
      <div className="w-full py-2 px-4 my-2 bg-gray-100 rounded shadow flex items-center gap-4">
       <div className="flex-1">
         <div className="h-2 bg-gray-300 rounded overflow-hidden mb-1">
@@ -170,14 +112,6 @@ const VoicePlayer = ({voiceId, length }: VoicePlayerProps) => {
         {isPlaying ? <FaPause/> : <FaPlay/>}
       </button>
     </div>
-
-    <div className="flex items-center gap-2">
-        <div><button onClick={()=> console.log("hi")} className="bg-green-600 px-4 py-1.5 text-white rounded text-[13px]">Accept</button></div>
-        <div><button onClick={() =>console.log("hi")} className="bg-red-600 px-4 py-1.5 text-white rounded text-[13px]">Reject</button></div>
-    </div>
-   </div>
-
-
   );
 };
 

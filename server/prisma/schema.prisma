@@ -16,7 +16,7 @@ enum UserRole{
 model User{
   id       Int      @id @default(autoincrement())
   role     UserRole   @default(user)
-  ref_code    Int @unique
+  ref_code    Int
   username String   @unique
   password String
 
@@ -30,7 +30,7 @@ model UserProfile{
   city String
   age Int
   sentence_id Int @default(0)
-  count    Int     @default(0)
+  total    Int     @default(0)
   accept    Int     @default(0)
 
   user User @relation(fields: [user_id], references: [id])
@@ -46,7 +46,7 @@ model AdminProfile{
     address String
     phone String
     university String
-    count    Int     @default(0)
+    total    Int     @default(0)
     accept    Int     @default(0)
 }
 
@@ -54,7 +54,7 @@ model SuperAdminProfile{
     id Int @id @default(autoincrement())
     user_id Int @unique
     name String
-    count    Int     @default(0)
+    total    Int     @default(0)
     accept    Int     @default(0)
 }
 
@@ -74,7 +74,7 @@ model Voice{
 model VoiceData{
   id Int @id @default(autoincrement())
   user_id Int
-  sentence_id Int @unique
+  sentence_id Int
   voice_id Int @unique
   length Int
   status Boolean @default(false)

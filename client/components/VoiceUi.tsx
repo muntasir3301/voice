@@ -188,7 +188,7 @@ const startRecording = async () => {
                 <div className="flex justify-between items-center">
                   <p className="capitalize">Hi {userData?.username} 👋</p>
                   <div className="flex text-xs gap-4 items-center">
-                    <p>Total: {userData?.count}</p>
+                    <p>Total: {userData?.total}</p>
                     <p>Accept: {userData?.accept}</p>
                   </div>
                 </div>

@@ -54,7 +54,7 @@ router.get("/:id", async (req, res) => {
 
 
 router.post("/", upload.single('file'), async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -72,15 +72,17 @@ router.post("/", upload.single('file'), async (req, res) => {
           user_id: Number(user_id),
           sentence_id: Number(sentence_id),
           ref_code: Number(ref_code),
-          length: Number(ref_code)
+          length: Number(length)
         }
     });
 
-    // UserProfile এর sentence counter বাড়ানো
+
+    // increse sentence count for a profile
     await prisma.userProfile.update({
       where: { user_id: Number(user_id) },
       data: {
-        sentence_id: { increment: 1 }
+        sentence_id: { increment: 1 },
+        total: { increment: 1 }
       }
     });
 
