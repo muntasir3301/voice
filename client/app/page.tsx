@@ -1,7 +1,7 @@
 "use client";
 import api from "@/utils/axiosConfig";
-import { useState, useRef, useEffect } from "react";
-// import VoicePlayer from "@/components/VoicePlayer";
+import { useState, useEffect } from "react";
+import VoicePlayer from "@/components/VoicePlayer";
 import {
   Table,
   TableBody,
@@ -10,47 +10,58 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { MdKeyboardVoice, MdSend } from "react-icons/md";
 import Header from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import AudioRecorderUI from "@/components/Voice";
+import VoiceUi from "@/components/VoiceUi";
 
+export type UserType ={
+  id: number;
+  sentence_id: number;
+  username: string;
+  role: string;
+  count: number;
+  accept: number;
+  ref_code: number;
+  text: string;
+}
 
 type VoiceDataType ={
   name: string;
-  userId: string;
-  voiceId: string;
-  sentenceId: string;
+  user_id: string;
+  voice_id: string;
+  sentence_id: string;
   length: number;
-  sentence: string;
+  user: {username: string};
+  sentence: {text: string}
 }
 
 export default function VoiceRecorder() {
-  const [recording, setRecording] = useState(false);
   const [voiceData, setVoiceData] = useState<VoiceDataType[]>([]);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunks = useRef<Blob[]>([]);
-  const [user, setUser] = useState<{id: string; name: string}>();
-  const [selectSentence, setSelectSentence] = useState("");
-  const [currentSentence, setCurrentSentence] = useState<{text: string, _id: string}[]>([]);
-
+  const [user, setUser] = useState<UserType>();
+  const [userData, setUserData] = useState<UserType>();
 
   useEffect(() => {
     if(!user) return;
 
-    api.get(`/voice-data/${user?.id}`)
-    .then((voice)=>{
-      api.get('/sentence')
-      .then((res)=>{
-          const restOfTheSentence = res.data.filter(
-              (ele: {_id: string}) => !voice.data.find((item: {sentenceId: string}) => item.sentenceId === ele._id)
-            );
-            setCurrentSentence(restOfTheSentence)
-          })
-          .catch((err)=> console.log(err)); 
+    api.get(`/users/user-profile/${user.id}`)
+    .then((res)=>{
+      api.get(`/sentence/${res.data.sentence_id}`)
+      .then((val)=>{
+        setUserData({...user, ...res.data, ...val.data})
+        console.log({...user, ...res.data, ...val.data}, "my johfu")
 
-          setVoiceData(voice.data)
       })
+      .catch((err)=> console.log(err))
+    })
+    .catch((err)=> console.log(err))
+
+    console.log(user)
+
+    api.get(`/voice-data/${user.ref_code}`)
+    .then((res)=>{
+      setVoiceData(res.data);
+
+    })
     .catch((err)=> console.log(err));
 
   }, [user]);
@@ -64,154 +75,38 @@ export default function VoiceRecorder() {
     }
   }, []);
 
-  const startRecording = async () => {
-
-    if(!user){
-      alert("Login to store a voice");
-      return;
-    }
-
-    if(!selectSentence || selectSentence === ""){
-      alert("Choice a sentence");
-      return;
-    }
-
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    mediaRecorderRef.current = new MediaRecorder(stream);
-
-    mediaRecorderRef.current.ondataavailable = (event) => {
-      if (event.data.size > 0) audioChunks.current.push(event.data);
-    };
-
-    mediaRecorderRef.current.onstop = async () => {
-      const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
-      audioChunks.current = [];
-
-      const formData = new FormData();
-      formData.append("voice", audioBlob, "recording.webm");
-
-      // Create a temporary audio element
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        const {_id, text:sentence }  = JSON.parse(selectSentence);
-        
-        audio.onloadedmetadata = () => {
-          formData.append("length", audio.duration.toString());
-          formData.append("userId", user.id);
-          formData.append("sentence", sentence);
-          formData.append("sentenceId", _id);
-
-
-          api.post('/upload-voice', formData)
-          .then((res)=>{
-             const newVoice = {
-                name: user.name,
-                userId: user.id,
-                voiceId: res.data._id,
-                sentenceId: _id,
-                length: audio.duration,
-                sentence
-              }
-            setVoiceData([newVoice, ...voiceData]);
-            setSelectSentence("");
-            const newSentence = currentSentence.filter((ele: {_id: string})=> ele._id !== _id)
-            setCurrentSentence(newSentence);
-          })
-          .catch((err)=> console.log(err))
-        };
-    };
-
-    mediaRecorderRef.current.start();
-    setRecording(true);
-  };
-
-  const stopRecording = () => {
-    mediaRecorderRef.current?.stop();
-    setRecording(false);
-  };
-
-  // const fetchVoice = (id)=>{
-  //   console.log(id);
-  // }
-
-
-  // if(!user){
-  //   return <h2 className="py-20 container text-red-500">Login To Add a Voice ....</h2>
-  // }
 
 
   return (
    <>
     <Header/>
-      <div className="">
-          <div className="w-60">
-          </div>
-          <div>
-          {recording ? (
-            <button className="flex gap-1 items-center border py-2 px-4 text-sm bg-blue-400 text-white rounded" onClick={stopRecording}>
-              <MdSend className="text-xl"/>
-              <div>Stop Record</div>
-            </button>
-          ) : (
-            <button className="flex gap-1 items-center border py-2 px-4 text-sm bg-blue-500 text-white rounded" onClick={startRecording}>
-              <MdKeyboardVoice className="text-xl"/>
-              <div>Start Record</div>
-            </button>
-          )}
-        </div>
-      </div>
+  
 
-    <section className="py-12">
-      <div className="container">
-            <div className="flex justify-center">
-              <div>
-                 {/* <h2 className="text-3xl mb-5">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</h2> */}
-                {/* <div className="flex justify-center">
-                    {recording ? (
-                      <button className="flex gap-1 items-center border py-2 px-4 text-sm bg-blue-400 text-white rounded" onClick={stopRecording}>
-                        <MdSend className="text-xl"/>
-                        <div>Stop Record</div>
-                      </button>
-                    ) : (
-                      <button className=" gap-1 items-center border py-2 px-4 text-sm bg-blue-500 text-white rounded" onClick={startRecording}>
-                        <MdKeyboardVoice className="text-5xl"/>
-                        <div>Start</div>
-                      </button>
-                    )}
-                </div> */}
-              </div>
-            </div>
-      </div>
-    </section>
+    <VoiceUi userData={userData!}/>
 
-    <AudioRecorderUI/>
-
-        
-
-<br /><br /><br />
       
-     <section className="container py-12 min-h-[55vh]">
+    <section className="container py-12 min-h-[55vh]">
+      <h2 className="text-2xl border-l-[3px] pl-3 mb-4 border-primary">Review a voice</h2>
       {/* Statics  base on the user role */}
       <Table className="border">
         <TableHeader className="bg-gray-300 text-black">
           <TableRow>
-            <TableHead className="w-[5%] text-center">NO.</TableHead>
-            <TableHead className="w-[15%]">Name</TableHead>
-            <TableHead className="w-[15%]">Author</TableHead>
-            <TableHead className="w-[35%]">Sentence</TableHead>
-            <TableHead className="w-[30%]">Listen</TableHead>
+            <TableHead className="w-[2%] text-center">S.no</TableHead>
+            <TableHead className="w-[8%]">Username</TableHead>
+            <TableHead className="w-[20%]">Sentence</TableHead>
+            <TableHead className="w-[30%]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-        {voiceData.map((data, i) => (
+        {voiceData?.map((data, i) => (
           <TableRow key={i+48512} className={`${i%2==1 && "bg-gray-100"}`}>
-            <TableCell className="text-center">{i+1}</TableCell>
-            <TableCell>{user?.name}</TableCell>
-            <TableCell>Muntasir</TableCell>
-            <TableCell>{data.sentence}</TableCell>
+            <TableCell className="text-center">{data.sentence_id}</TableCell>
+            {/* <TableCell>{data.sentence}</TableCell> */}
+            <TableCell>{data.user.username}</TableCell>
+            <TableCell>{data.sentence.text}</TableCell>
             <TableCell className="text-center">
               {/* Voice Player  */}
-              {/* <VoicePlayer voiceId={data.voiceId} length={data.length}/> */}
+              <VoicePlayer voiceId={data.voice_id} length={data.length}/>
             </TableCell>
           </TableRow>
         ))}

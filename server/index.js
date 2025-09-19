@@ -40,12 +40,16 @@ pool.connect()
 
 
 const userHanlder = require('./routerHandler/userRouteHanlder');
-const sentenceHanlder = require('./routerHandler/sentenceRouteHandler');
+const sentenceHanlder = require('./routerHandler/sentenceHandler');
 const sql = require('./routerHandler/sql');
+const voiceHandler = require('./routerHandler/voiceHandler');
+const voiceDataHandler = require('./routerHandler/voiceDataHandler');
 
 app.use('/users', userHanlder);
 app.use('/sentence', sentenceHanlder);
 app.use('/sql', sql);
+app.use('/voices', voiceHandler);
+app.use('/voice-data', voiceDataHandler);
 
 const voiceSchema = new mongoose.Schema({
   audio: Buffer,

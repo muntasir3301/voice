@@ -1,13 +1,14 @@
 "use client";
 import { useRef, useState } from "react";
 import { MdKeyboardVoice, MdSend } from "react-icons/md";
-import VoicePlayer from "./VoicePlayer";
+import { UserType } from "@/app/page";
+import VoiceChecker from "./VoiceChecker";
 
-export default function WhatsAppVisualizer() {
+
+export default function VoiceUi({userData}: {userData: UserType}) {
   const [recording, setRecording] = useState(false);
   const [time, setTime] = useState(0);
   const [audioLength, setAudioLength] = useState(0);
-
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -85,7 +86,7 @@ const audioChunks = useRef<Blob[]>([]);
 //       cancelAnimationFrame(animationId.current!);
 //     };
 //   };
-
+let audioBlob;
 
 const startRecording = async () => {
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -122,7 +123,7 @@ const startRecording = async () => {
     clearInterval(timer);
     cancelAnimationFrame(animationId.current!);
 
-    const audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
+    audioBlob = new Blob(audioChunks.current, { type: "audio/webm" });
     // setVoice(audioBlob);
     const url = URL.createObjectURL(audioBlob);
     setAudioUrl(url); // preview url
@@ -143,9 +144,9 @@ const startRecording = async () => {
   };
 
   return (
-    <section>
+    <section className="py-12 md:py-16">
         <div className="max-w-2xl mx-auto p-6 bg-white/70 rounded-xl shadow-lg border">
-            <h2 className="text-2xl mb-4 py-2">Lorem ipsum dolor sit amet. Lorem ipsum.</h2>
+            <h2 className="text-2xl mb-4 py-2">{userData?.text}</h2>
             <div className="flex justify-center">
               <div>
                 <div className="w-full h-28 bg-gray-100 rounded-md border border-dashed border-gray-200 flex items-center justify-center">
@@ -181,14 +182,14 @@ const startRecording = async () => {
                 </div>
                 {/* Lister Record */}
                 {
-                    audioUrl && <VoicePlayer setAudioUrl={setAudioUrl} audioUrl={audioUrl} audioLength={audioLength}/>
+                    audioUrl && <VoiceChecker audioChunks={audioChunks} setAudioUrl={setAudioUrl} audioUrl={audioUrl} audioLength={audioLength} sentence_id={userData?.sentence_id}/>
                 }
                 <hr className="my-5"/>
                 <div className="flex justify-between items-center">
-                  <p>Hi Muntasir 👋</p>
+                  <p className="capitalize">Hi {userData?.username} 👋</p>
                   <div className="flex text-xs gap-4 items-center">
-                    <p>Total: 25254</p>
-                    <p>Accept: 25254</p>
+                    <p>Total: {userData?.count}</p>
+                    <p>Accept: {userData?.accept}</p>
                   </div>
                 </div>
             </div>

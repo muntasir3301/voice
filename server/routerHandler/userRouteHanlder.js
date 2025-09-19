@@ -1,11 +1,11 @@
 const express = require("express");
-const User = require("../schemaModel/userSchemaModel"); // path to your model
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // Get all users
 router.get("/", async (req, res) => {
+  // console.log("hi")
   try {
     const users = await prisma.user.findMany(); 
     res.json(users);
@@ -16,17 +16,22 @@ router.get("/", async (req, res) => {
 
 router.get("/user-profile", async (req, res) => {
   try {
-    const users = await prisma.UserProfile.findMany(); 
+    const users = await prisma.userProfile.findMany({}); 
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: "Error fetching users" });
   }
 });
 
-router.get("/user-profile", async (req, res) => {
+router.get("/user-profile/:id", async (req, res) => {
+  const { id } = req.params;
+  const user_id = parseInt(id)
+  
   try {
-    const users = await prisma.UserProfile.findMany(); 
-    res.json(users);
+    const user = await prisma.userProfile.findUnique({
+      where: {user_id}
+    }); 
+    res.json(user);
   } catch (err) {
     res.status(500).json({ error: "Error fetching users" });
   }
@@ -68,7 +73,7 @@ const verifyToken = (req, res, next) => {
 router.post("/register", async (req, res) => {
   try {
     const { username, password, role } = req.body;
-
+    
     const existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
@@ -76,7 +81,7 @@ router.post("/register", async (req, res) => {
 
     // hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
-
+    
     const newUser = await prisma.user.create({
       data: { username, password: hashedPassword},
     });
@@ -155,6 +160,7 @@ router.post("/login", async (req, res) => {
         id: user.id,
         username: user.username,
         role: user.role,
+        ref_code: user.ref_code,
         profile,
       },
     });
