@@ -14,6 +14,31 @@ router.get("/", async (req, res) => {
   }
 });
 
+// All users by ref code
+router.get("/:ref_code", async (req, res) => {
+  const { ref_code } = req.params;
+  try {
+    const users = await prisma.user.findMany({
+      where: {ref_code: Number(ref_code), role: 'user'},
+      select:{
+        username: true,
+        profile: {
+          select:{
+            user_id: true,
+            city: true,
+            age: true,
+            total: true,
+            accept: true
+          }
+        }
+      }
+    }); 
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching users" });
+  }
+});
+
 router.get("/user-profile", async (req, res) => {
   try {
     const users = await prisma.userProfile.findMany({}); 
