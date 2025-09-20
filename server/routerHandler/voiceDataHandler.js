@@ -48,10 +48,10 @@ router.post("/", async (req, res) => {
 
 
 router.post("/accept", async(req, res)=> {
-  const { id, user_id, ref_code } = req.body;
-  console.log(req.body)
+  const { id, user_id, ref_code, sentence_id} = req.body;
   
   try{
+    // voice data status true
     await prisma.voiceData.update({
       where: { id: Number(id)},
       data: {
@@ -59,12 +59,24 @@ router.post("/accept", async(req, res)=> {
       }
     });
 
+    // increase sentence count
+    await prisma.sentence.update({
+      where: {id: Number(sentence_id)},
+      data: {
+        count: {increment: 1},
+        usedBy: { push: user_id }
+      }
+    })
+
+    // Update user accpeted count
     await prisma.userProfile.update({
       where: { user_id: Number(user_id)},
       data: {
         accept: {increment: 1}
       }
     });
+
+
 
 
     

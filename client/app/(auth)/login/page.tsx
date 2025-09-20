@@ -32,7 +32,7 @@ export default function Login() {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
-        // window.location.href = "/"; 
+        window.location.href = "/"; 
     })
     .catch((err)=>{
       const serverMsg = err.response?.data?.error || "Something went wrong. Try again!";

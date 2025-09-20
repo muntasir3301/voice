@@ -21,12 +21,13 @@ export default function Register() {
         setLoading(true);
         
         const form = e.currentTarget;
+        const refcode = parseInt(form.refcode.value);
         const age = parseInt(form.age.value);
         const city = form.city.value;
         const username = form.username.value;
         const password = form.password.value;
 
-        const userData = {age, city, username, password};
+        const userData = {age, city, username, password, ref_code: refcode};
         
         api.post('/users/register', userData)
         .then(()=>{

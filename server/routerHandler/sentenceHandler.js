@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient, Prisma} = require('@prisma/client');
 const prisma = new PrismaClient();
 
 
-router.get("/", async (req, res) => {
+router.get("/all", async (req, res) => {
   try {
     const allSentence = await prisma.sentence.findMany();
 
@@ -15,15 +15,47 @@ router.get("/", async (req, res) => {
 });
 
 
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
+router.get("/:user_id", async (req, res) => {
+  const { user_id } = req.params;
+  // console.log(user_id);
   try {
-    const allSentence = await prisma.sentence.findUnique({
-      where: {id: Number(id)}
-    });
+    // const sentence = await prisma.sentence.findUnique({
+    //   where: {id: Number(id)},
+    //   limit: {count < 5}
+    // });
+    
+//     const sentence = await prisma.sentence.findFirst({
+//   where: {
+//     count: { lt: 25 },
+//     // NOT: { usedBy: { has: 3 } },  // works with Int[]
+//     usedBy: { has: 3 , not: true }
+//   },
+// });
 
-    res.json(allSentence);
+// const sentence = await prisma.sentence.findFirst({
+//   where: {
+//     count: {
+//       lt: 25,
+//     },
+//     NOT: {
+//       usedBy: {
+//         has: 3,
+//       },
+//     },
+//   },
+// });
+
+ const sentence = await prisma.$queryRaw(Prisma.sql`
+  SELECT * FROM "Sentence"
+  WHERE "count" < 25
+    AND NOT (COALESCE("usedBy", '{}') @> ARRAY[${user_id}]::int[])
+  ORDER BY RANDOM()
+  LIMIT 1;
+`);
+
+    res.json(sentence[0]);
   } catch (err) {
+    console.log(err)
     res.status(500).json({ error: "Error fetching voices" });
   }
 });

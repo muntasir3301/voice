@@ -10,6 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Skeleton } from "@/components/ui/skeleton";
 
 export type UserType ={
   id: number;
@@ -36,6 +37,7 @@ type VoiceDataType ={
 export default function VoiceRecorder() {
   const [voiceData, setVoiceData] = useState<VoiceDataType[]>([]);
   const [user, setUser] = useState<UserType>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if(!user) return;
@@ -44,7 +46,8 @@ export default function VoiceRecorder() {
     .then((res)=>{
       setVoiceData(res.data);
     })
-    .catch((err)=> console.log(err));
+    .catch((err)=> console.log(err))
+    .finally(()=> setLoading(false))
 
   }, [user]);
 
@@ -58,10 +61,10 @@ export default function VoiceRecorder() {
   }, []);
 
 
-  const handleAcceptVoice=(id: number)=>{
+  const handleAcceptVoice=(id: number, sentence_id: number)=>{
     if(!user) return;
 
-    api.post('/voice-data/accept', {id, user_id: user.id, ref_code: user.ref_code})
+    api.post('/voice-data/accept', {id, user_id: user.id, ref_code: user.ref_code, sentence_id})
     .then((res)=> {
       setVoiceData(res.data);
     })
@@ -84,36 +87,57 @@ export default function VoiceRecorder() {
       <h2 className="text-2xl border-l-[3px] pl-3 mb-4 border-primary">Review a voice</h2>
       {/* Statics  base on the user role */}
       <Table className="border">
-        <TableHeader className="bg-gray-300 text-black">
+        <TableHeader className="bg-primary/40">
           <TableRow>
-            <TableHead className="w-[2%] text-center">S.no</TableHead>
-            <TableHead className="w-[8%]">Username</TableHead>
-            <TableHead className="w-[20%]">Sentence</TableHead>
+            <TableHead className="w-[2%] text-center text-black">S.no</TableHead>
+            <TableHead className="w-[8%] text-black">Username</TableHead>
+            <TableHead className="w-[20%] text-black">Sentence</TableHead>
             <TableHead className="w-[30%]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-        {voiceData?.map((data, i) => (
-          <TableRow key={i+48512} className={`${i%2==1 && "bg-gray-100"}`}>
-            <TableCell className="text-center">{data.sentence_id}</TableCell>
-            {/* <TableCell>{data.sentence}</TableCell> */}
-            <TableCell>{data.user.username}</TableCell>
-            <TableCell>{data.sentence.text}</TableCell>
-            <TableCell className="text-center">
-              {/* Voice Player  */}
 
-            <div className="flex gap-10">
-                <VoicePlayer id={data.id} voice_id={data.voice_id} length={data.length}/>
+        {
+          loading ? 
+            Array.from({ length: 10 }).map((ele, i) => (
+                  <TableRow key={i}>
+                    <TableCell>
+                      <Skeleton className="w-full h-6 my-1"/>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="w-full h-6"/>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="w-full h-6"/>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="w-full h-6"/>
+                    </TableCell>
+                  </TableRow>
+              ))
+              :
+            voiceData ? voiceData.map((data, i) => (
+              <TableRow key={i+48512} className={`${i%2==1 && "bg-primary/10"}`}>
+              <TableCell className="text-center">{data.sentence_id}</TableCell>
+              <TableCell>{data.user.username}</TableCell>
+              <TableCell>{data.sentence.text}</TableCell>
+              <TableCell className="text-center">
 
-                <div className="flex items-center gap-2">
-                  <div><button onClick={()=> handleAcceptVoice(data.id)} className="bg-green-600 px-4 py-1.5 text-white rounded text-[13px]">Accept</button></div>
-                  <div><button onClick={()=> handleRejectVoice(data.id, data.voice_id)} className="bg-red-600 px-4 py-1.5 text-white rounded text-[13px]">Reject</button></div>
+                {/* Voice Player  */}
+                <div className="flex gap-10">
+                  <VoicePlayer id={data.id} voice_id={data.voice_id} length={data.length}/>
+                    <div className="flex items-center gap-2">
+                      <div><button onClick={()=> handleAcceptVoice(data.id, data.sentence_id)} className="bg-green-600 px-4 py-1.5 text-white rounded text-[13px]">Accept</button></div>
+                      <div><button onClick={()=> handleRejectVoice(data.id, data.voice_id)} className="bg-red-600 px-4 py-1.5 text-white rounded text-[13px]">Reject</button></div>
+                    </div>
                 </div>
-            </div>
 
-            </TableCell>
-          </TableRow>
-        ))}
+                </TableCell>
+              </TableRow>
+            ))
+            :
+            <h2>No user found</h2>
+        }
         </TableBody>
       </Table>
      </section>

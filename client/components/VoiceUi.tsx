@@ -3,12 +3,16 @@ import { useRef, useState } from "react";
 import { MdKeyboardVoice, MdSend } from "react-icons/md";
 import { UserType } from "@/app/page";
 import VoiceChecker from "./VoiceChecker";
+import { Skeleton } from "./ui/skeleton";
 
 
-export default function VoiceUi({userData}: {userData: UserType}) {
+export default function VoiceUi({userData, setGetNewSentence}: {userData: UserType}) {
   const [recording, setRecording] = useState(false);
   const [time, setTime] = useState(0);
   const [audioLength, setAudioLength] = useState(0);
+
+  const [errorMsg, setErrorMsg] = useState<string>("");
+  const [successMsg, setSuccessMsg] = useState<string>("");
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -59,33 +63,7 @@ const audioChunks = useRef<Blob[]>([]);
     render();
   };
 
-//   const startRecording = async () => {
-//     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-//     const audioContext = new AudioContext();
-//     const source = audioContext.createMediaStreamSource(stream);
-//     const analyser = audioContext.createAnalyser();
-//     analyser.fftSize = 256;
-//     analyserRef.current = analyser;
-//     source.connect(analyser);
 
-//     mediaRecorderRef.current = new MediaRecorder(stream);
-//     mediaRecorderRef.current.start();
-
-//     setRecording(true);
-//     setTime(0);
-//     startTime.current = Date.now();
-
-//     const timer = setInterval(() => {
-//       setTime((Date.now() - startTime.current) / 1000);
-//     }, 1000);
-
-//     drawBars();
-
-//     mediaRecorderRef.current.onstop = () => {
-//       clearInterval(timer);
-//       cancelAnimationFrame(animationId.current!);
-//     };
-//   };
 let audioBlob;
 
 const startRecording = async () => {
@@ -146,7 +124,14 @@ const startRecording = async () => {
   return (
     <section className="py-12 md:py-16">
         <div className="max-w-2xl mx-auto p-6 bg-white/70 rounded-xl shadow-lg border">
-            <h2 className="text-2xl mb-4 py-2">{userData?.text}</h2>
+        <div className=" mb-4 py-2">
+          {
+            userData ? 
+            <h2 className="text-2xl">{userData?.text}</h2>
+            :
+            <Skeleton className="h-[35px] w-[400px] rounded" />
+          }
+        </div>
             <div className="flex justify-center">
               <div>
                 <div className="w-full h-28 bg-gray-100 rounded-md border border-dashed border-gray-200 flex items-center justify-center">
@@ -182,51 +167,35 @@ const startRecording = async () => {
                 </div>
                 {/* Lister Record */}
                 {
-                    audioUrl && <VoiceChecker audioChunks={audioChunks} setAudioUrl={setAudioUrl} audioUrl={audioUrl} audioLength={audioLength} sentence_id={userData?.sentence_id}/>
+                    audioUrl && <VoiceChecker audioChunks={audioChunks} setAudioUrl={setAudioUrl} audioUrl={audioUrl} audioLength={audioLength} sentence_id={userData?.id} setErrorMsg={setErrorMsg} setSuccessMsg={setSuccessMsg} setGetNewSentence={setGetNewSentence} />
                 }
                 <hr className="my-5"/>
                 <div className="flex justify-between items-center">
-                  <p className="capitalize">Hi {userData?.username} 👋</p>
+                    {
+                      userData ? 
+                        <p className="capitalize">Hi {userData?.username} 👋</p>
+                      :
+                         <Skeleton className="h-[20px] w-[100px] rounded" />
+                    }
+                    <div>
+                      {errorMsg && <h2 className=" text-red-500">Someting Error! Reload & try again!</h2>}
+                      {successMsg && <h2 className="text- text-green-500">Successfully Added</h2>}
+                    </div>
                   <div className="flex text-xs gap-4 items-center">
-                    <p>Total: {userData?.total}</p>
-                    <p>Accept: {userData?.accept}</p>
+                    {
+                      userData ? 
+                        <>
+                          <p>Total: {userData?.total}</p>
+                          <p>Accept: {userData?.accept}</p>
+                        </>
+                        :
+                        <Skeleton className="h-[20px] w-[120px] rounded" />
+                      }
                   </div>
                 </div>
             </div>
             </div>
         </div>
-
-{/* 
-{audioUrl && (
-  <div>
-    <audio controls src={audioUrl} />
-    <div className="flex gap-3 mt-2">
-      <button
-        className="bg-green-600 px-3 py-1 text-white rounded"
-        onClick={() => {
-          // send to backend
-          const formData = new FormData();
-          formData.append("voice", voice!);
-          // api.post("/upload-voice", formData)
-          console.log("✅ Saved to DB");
-        }}
-      >
-        Save
-      </button>
-      <button
-        className="bg-red-600 px-3 py-1 text-white rounded"
-        onClick={() => {
-          setVoice(null);
-          setAudioUrl(null);
-          console.log("❌ Discarded");
-        }}
-      >
-        Cancel
-      </button>
-    </div>
-  </div>
-)} */}
-
     </section>
   );
 }

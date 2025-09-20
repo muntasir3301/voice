@@ -14,6 +14,29 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/user-data/:user_id", async (req, res) => {
+  // console.log("hi")
+  const { user_id } = req.params;
+  console.log(user_id)
+
+  try {
+    const users = await prisma.userProfile.findUnique({
+      where: {user_id},
+      select: {
+        sentence_id: true,
+        total: true,
+        accept: true,
+        sentence: {
+          text: true
+        }
+      }
+    }); 
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching users" });
+  }
+});
+
 // All users by ref code
 router.get("/:ref_code", async (req, res) => {
   const { ref_code } = req.params;
@@ -97,18 +120,18 @@ const verifyToken = (req, res, next) => {
 
 router.post("/register", async (req, res) => {
   try {
-    const { username, password, role } = req.body;
+    const { username, password, role, ref_code } = req.body;
     
     const existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
-
+    
     // hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const newUser = await prisma.user.create({
-      data: { username, password: hashedPassword},
+      data: { username, password: hashedPassword, ref_code},
     });
     console.log(newUser)
 

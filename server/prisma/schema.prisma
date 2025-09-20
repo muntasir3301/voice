@@ -22,6 +22,7 @@ model User{
 
   profile UserProfile?
   voiceData VoiceData[]
+  // sentences Sentence[] @relation("UserSentences")
 }
 
 model UserProfile{
@@ -29,7 +30,7 @@ model UserProfile{
   user_id Int @unique
   city String
   age Int
-  sentence_id Int @default(0)
+  sentence_id Int @default(1)
   total    Int     @default(0)
   accept    Int     @default(0)
 
@@ -61,6 +62,8 @@ model SuperAdminProfile{
 model Sentence{
   id Int @id @default(autoincrement())
   text String
+  count Int @default(0)
+  usedBy Int[] @default([])
 
   voiceData VoiceData[]
 }

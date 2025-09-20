@@ -54,7 +54,9 @@ router.get("/:id", async (req, res) => {
 
 
 router.post("/", upload.single('file'), async (req, res) => {
-  // console.log(req.body);
+  console.log(req.body);
+  // return;
+
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -63,8 +65,15 @@ router.post("/", upload.single('file'), async (req, res) => {
     const voice = await prisma.voice.create({
       data: {record: req.file.buffer}
     });
+
     const {user_id, sentence_id, ref_code, length} = req.body;
-    
+
+     await prisma.sentence.update({
+        where: {id: Number(sentence_id)},
+        data: {
+          usedBy: { push: Number(user_id)}
+        }
+      })
 
     await prisma.voiceData.create({
         data: {
@@ -75,7 +84,6 @@ router.post("/", upload.single('file'), async (req, res) => {
           length: Number(length)
         }
     });
-
 
     // increse sentence count for a profile
     await prisma.userProfile.update({
