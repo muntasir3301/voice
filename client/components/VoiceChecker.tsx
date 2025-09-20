@@ -2,6 +2,9 @@ import api from "@/utils/axiosConfig";
 import { useState, useRef, useEffect } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { MutableRefObject } from "react";
+import { SentenceType } from "@/app/page";
+
+
 
 interface VoicePlayerProps {
   audioUrl: string;
@@ -11,6 +14,7 @@ interface VoicePlayerProps {
   audioChunks:MutableRefObject<Blob[]>;
   setErrorMsg: React.Dispatch<React.SetStateAction<string>>;
   setSuccessMsg:  React.Dispatch<React.SetStateAction<string>>;
+  setSentenceData:  React.Dispatch<React.SetStateAction<SentenceType | null>>;
 }
 
 declare global {
@@ -19,7 +23,7 @@ declare global {
   }
 }
 
-const VoiceChecker = ({audioChunks, audioUrl, setAudioUrl, audioLength, sentence_id, setErrorMsg, setSuccessMsg, setGetNewSentence}: VoicePlayerProps) => {
+const VoiceChecker = ({audioChunks, audioUrl, setAudioUrl, audioLength, sentence_id, setErrorMsg, setSuccessMsg, setSentenceData}: VoicePlayerProps) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0); // 0 to 1
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -117,7 +121,12 @@ const VoiceChecker = ({audioChunks, audioUrl, setAudioUrl, audioLength, sentence
     api.post('/voices', formData)
     .then(()=>{
       setSuccessMsg("Voice Successfully Added");
-      setGetNewSentence(true);
+
+          api.get(`/sentence/${user.id}`)
+          .then((res)=>{
+            setSentenceData(res.data);
+          })
+          .catch((err)=> console.log(err))
     })
     .catch(()=> setErrorMsg("Something worng! Reload the page and try again!"))
     .finally(()=> {setAudioUrl(null); setSaveLoading(false)});

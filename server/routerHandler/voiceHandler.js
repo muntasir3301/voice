@@ -74,6 +74,7 @@ router.post("/", upload.single('file'), async (req, res) => {
           usedBy: { push: Number(user_id)}
         }
       })
+      console.log("i")
 
     await prisma.voiceData.create({
         data: {
@@ -84,6 +85,8 @@ router.post("/", upload.single('file'), async (req, res) => {
           length: Number(length)
         }
     });
+      console.log("bhsoi")
+
 
     // increse sentence count for a profile
     await prisma.userProfile.update({
@@ -93,6 +96,7 @@ router.post("/", upload.single('file'), async (req, res) => {
         total: { increment: 1 }
       }
     });
+
 
     res.json({message: "Successfully added"});
   } catch (err) {

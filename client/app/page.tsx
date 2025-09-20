@@ -5,61 +5,70 @@ import VoiceUi from "@/components/VoiceUi";
 import Link from "next/link";
 
 
+export type SentenceType = {
+  id: number;
+  text: string;
+  count: number
+};
+
+
 export type UserType ={
   id: number; //
-  sentence_id: number; //
   username: string; //
   role: string; // 
   total: number; //
-  accept: number; //
+  accept: number; // 
   ref_code: number; //
-  text: string;
 }
 
 export default function VoiceRecorder() {
   const [user, setUser] = useState<UserType>();
   const [userData, setUserData] = useState<UserType>();
-  const [getNewSentence, setGetNewSentence] = useState(false)
-  const [profileData, setProfileData] = useState<UserType>();
+  const [sentenceData, setSentenceData] = useState<SentenceType | null>(null)
 
 
-  const getSentence =(data: UserType)=>{
-    // console.log("tore koira hoibo")
-    let myData;
-    if(getNewSentence){
-      myData = profileData;
-    }else{
-      myData = data;
-    }
+  // const getSentence =(data: UserType)=>{
+  //   // console.log("tore koira hoibo")
+  //   let myData;
+  //   if(getNewSentence){
+  //     myData = profileData;
+  //   }else{
+  //     myData = data;
+  //   }
 
-    if(!myData) return
-      api.get(`/sentence/${user.id}`)
-      .then((val)=>{
-        console.log({...user, ...myData, ...val.data}, "johfu ")
-        setUserData({...user, ...myData, ...val.data})
-      })
-      .catch((err)=> console.log(err))
-  }
+  //   if(!myData) return
+  //     api.get(`/sentence/${user.id}`)
+  //     .then((val)=>{
+  //       console.log({...user, ...myData, ...val.data}, "johfu ")
+  //       setUserData({...user, ...myData, ...val.data})
+  //     })
+  //     .catch((err)=> console.log(err))
+  //     .finally(()=> setGetNewSentence(true))
+  // }
 
   
-  useEffect(()=>{
-    if(!getNewSentence) return;
-    console.log("janu hi");
-    getSentence(profileData!);
+  // useEffect(()=>{
+  //   if(!getNewSentence) return;
+  //   getSentence(profileData!);
     
-  },[getNewSentence])
+  // },[getNewSentence])
 
   useEffect(() => {
     if(!user) return;
 
     api.get(`/users/user-profile/${user.id}`)
     .then((res)=>{
-      setProfileData(res.data);
-      getSentence(res.data);
-      // console.log("oi ")
+        setUserData({...user, ...res.data});
     })
     .catch((err)=> console.log(err))
 
+
+
+    api.get(`/sentence/${user.id}`)
+    .then((res)=>{
+      setSentenceData(res.data);
+    })
+    .catch((err)=> console.log(err))
   }, [user]);
 
   useEffect(() => {
@@ -76,7 +85,7 @@ export default function VoiceRecorder() {
    <>
      {
       user ?
-         <VoiceUi userData={userData!} setGetNewSentence={setGetNewSentence}/>
+         <VoiceUi userData={userData!} setSentenceData={setSentenceData} sentenceData={sentenceData!}/>
          :
          <section className="flex items-center pt-8 pb-12 dark:bg-gray-50 dark:text-gray-800">
             <div className="container flex flex-col items-center justify-center px-5 mx-auto my-8 space-y-8 text-center">

@@ -1,12 +1,12 @@
 "use client";
 import { useRef, useState } from "react";
 import { MdKeyboardVoice, MdSend } from "react-icons/md";
-import { UserType } from "@/app/page";
+import { SentenceType, UserType } from "@/app/page";
 import VoiceChecker from "./VoiceChecker";
 import { Skeleton } from "./ui/skeleton";
 
 
-export default function VoiceUi({userData, setGetNewSentence}: {userData: UserType}) {
+export default function VoiceUi({userData, sentenceData, setSentenceData}: {userData: UserType; sentenceData: SentenceType; setSentenceData: React.Dispatch<React.SetStateAction<SentenceType | null>>;}) {
   const [recording, setRecording] = useState(false);
   const [time, setTime] = useState(0);
   const [audioLength, setAudioLength] = useState(0);
@@ -75,6 +75,9 @@ const startRecording = async () => {
   analyserRef.current = analyser;
   source.connect(analyser);
 
+  setSuccessMsg("");
+  setErrorMsg("");
+
   mediaRecorderRef.current = new MediaRecorder(stream);
   audioChunks.current = []; // reset
   mediaRecorderRef.current.start();
@@ -127,7 +130,7 @@ const startRecording = async () => {
         <div className=" mb-4 py-2">
           {
             userData ? 
-            <h2 className="text-2xl">{userData?.text}</h2>
+            <h2 className="text-2xl">{sentenceData?.text}</h2>
             :
             <Skeleton className="h-[35px] w-[400px] rounded" />
           }
@@ -167,7 +170,7 @@ const startRecording = async () => {
                 </div>
                 {/* Lister Record */}
                 {
-                    audioUrl && <VoiceChecker audioChunks={audioChunks} setAudioUrl={setAudioUrl} audioUrl={audioUrl} audioLength={audioLength} sentence_id={userData?.id} setErrorMsg={setErrorMsg} setSuccessMsg={setSuccessMsg} setGetNewSentence={setGetNewSentence} />
+                    audioUrl && <VoiceChecker audioChunks={audioChunks} setAudioUrl={setAudioUrl} audioUrl={audioUrl} audioLength={audioLength} sentence_id={sentenceData?.id} setErrorMsg={setErrorMsg} setSuccessMsg={setSuccessMsg} setSentenceData={setSentenceData} />
                 }
                 <hr className="my-5"/>
                 <div className="flex justify-between items-center">
