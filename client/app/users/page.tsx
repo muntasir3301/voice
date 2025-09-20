@@ -118,7 +118,7 @@ export default function Users() {
             </TableRow>
           ))
           :
-        allUser ?  allUser.map((data, i) => (
+        allUser && allUser.length > 0 ?  allUser.map((data, i) => (
           <TableRow key={i} className={`${i%2==1 && "bg-primary/10"}`}>
             <TableCell className="text-center">{i+1}</TableCell>
             <TableCell className="text-center">{data.profile.user_id}</TableCell>

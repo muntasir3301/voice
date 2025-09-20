@@ -21,7 +21,7 @@ router.get("/:user_id", async (req, res) => {
   try {
     const sentence = await prisma.$queryRaw(Prisma.sql`
       SELECT * FROM "Sentence"
-      WHERE "count" < 3
+      WHERE "count" < 4
         AND NOT (COALESCE("usedBy", '{}') @> ARRAY[${user_id}]::int[])
       ORDER BY RANDOM()
       LIMIT 1;

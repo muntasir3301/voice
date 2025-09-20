@@ -212,12 +212,13 @@ router.post("/register-superadmin", async (req, res) => {
     
     // hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword)
     
     const newUser = await prisma.user.create({
-      data: { username, password: hashedPassword, ref_code: 12345},
+      data: { username, password: hashedPassword, ref_code: 12345, role: "superadmin"},
     });
-    
-    console.log(hashedPassword )
+    console.log('ok');
+
 
     await prisma.superAdminProfile.create({
       data: {user_id: newUser.id, name: "Application Admin"}

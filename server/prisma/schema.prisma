@@ -10,7 +10,7 @@ generator client {
 enum UserRole{
     user
     admin
-    super_admin
+    superadmin
 }
 
 model User{
