@@ -27,7 +27,7 @@ const VoiceChecker = ({audioChunks, audioUrl, setAudioUrl, audioLength, sentence
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0); // 0 to 1
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [user, setUser] = useState<{id: number, ref_code: number}>();
+  const [user, setUser] = useState<{id: number, ref_code: number, role: string}>();
   const [saveLoading, setSaveLoading] = useState(false);
 
 
@@ -117,6 +117,7 @@ const VoiceChecker = ({audioChunks, audioUrl, setAudioUrl, audioLength, sentence
     formData.append("sentence_id", sentence_id.toString());
     formData.append("ref_code", (user.ref_code).toString());
     formData.append("length", audioLength.toString());
+    formData.append("role", user.role);
 
     api.post('/voices', formData)
     .then(()=>{

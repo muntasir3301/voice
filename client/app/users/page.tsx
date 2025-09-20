@@ -130,7 +130,7 @@ export default function Users() {
           </TableRow>
         ))
         :
-        <h2>No user found</h2>
+        <h2 className="text-xl w-60 pl-5 py-6">No users found</h2>
       }
         
         </TableBody>

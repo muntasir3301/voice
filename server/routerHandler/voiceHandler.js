@@ -66,7 +66,7 @@ router.post("/", upload.single('file'), async (req, res) => {
       data: {record: req.file.buffer}
     });
 
-    const {user_id, sentence_id, ref_code, length} = req.body;
+    const {user_id, sentence_id, ref_code, length, role} = req.body;
 
      await prisma.sentence.update({
         where: {id: Number(sentence_id)},
@@ -85,17 +85,33 @@ router.post("/", upload.single('file'), async (req, res) => {
           length: Number(length)
         }
     });
-      console.log("bhsoi")
+      console.log(role, 'role')
 
 
-    // increse sentence count for a profile
-    await prisma.userProfile.update({
-      where: { user_id: Number(user_id) },
-      data: {
-        sentence_id: { increment: 1 },
-        total: { increment: 1 }
+      if(role=== "user"){
+        await prisma.userProfile.update({
+          where: { user_id: Number(user_id) },
+          data: {
+            total: { increment: 1 }
+          }
+        });
+      }else if(role=== "admin"){
+        console.log("hi")
+        await prisma.adminProfile.update({
+          where: { user_id: Number(user_id) },
+          data: {
+            total: { increment: 1 }
+          }
+        });
+      }else{
+        await prisma.superAdminProfile.update({
+          where: { user_id: Number(user_id) },
+          data: {
+            total: { increment: 1 }
+          }
+        });
       }
-    });
+    
 
 
     res.json({message: "Successfully added"});

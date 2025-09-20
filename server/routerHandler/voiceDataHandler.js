@@ -4,6 +4,17 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 
+router.get("/", async (req, res) => {
+  try {
+    const allSentence = await prisma.voiceData.findMany()
+
+    res.json(allSentence);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching voices" });
+  }
+});
+
+
 // All voice data
 router.get("/:ref_code", async (req, res) => {
   const { ref_code } = req.params;
@@ -115,23 +126,16 @@ router.post("/reject", async(req, res)=> {
       where: {id: Number(id)}
     });
     
-    console.log(user_id, sentence_id);
 
     // Delete voice record
     await prisma.voice.delete({
       where: {id: Number(voice_id)}
     });
-    console.log(user_id, sentence_id);
-    
 
-    // // pop userId from the sentence array
-    // await prisma.sentence.update({
-    //   where: {sentence_id: Number(sentence_id)},
-    //   pop: {usedBy: {user_id: Number(user_id)}}
-    // })
     await prisma.$queryRaw`
       UPDATE "Sentence"
-      SET "usedBy" = array_remove("usedBy", ${Number(user_id)})
+      SET "usedBy" = array_remove("usedBy", ${Number(user_id)}), 
+      "count" = "count" - 1
       WHERE "id" = ${Number(sentence_id)};
     `;
 

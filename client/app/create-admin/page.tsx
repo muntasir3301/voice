@@ -20,15 +20,20 @@ export default function Register() {
         setLoading(true);
         
         const form = e.target as HTMLFormElement;
+
         const name = (form.elements.namedItem("name") as HTMLInputElement)?.value;
-        const age = (form.elements.namedItem("age") as HTMLInputElement)?.value;
-        const address = (form.elements.namedItem("address") as HTMLInputElement)?.value;
         const email = (form.elements.namedItem("email") as HTMLInputElement)?.value;
+        const age = (form.elements.namedItem("age") as HTMLInputElement)?.value;
+        const phone = (form.elements.namedItem("phone") as HTMLInputElement)?.value;
+        const address = (form.elements.namedItem("address") as HTMLInputElement)?.value;
+        const university = (form.elements.namedItem("university") as HTMLInputElement)?.value;
+        const ref_code = (form.elements.namedItem("ref_code") as HTMLInputElement)?.value;
+        const username = (form.elements.namedItem("username") as HTMLInputElement)?.value;
         const password = (e.target as HTMLFormElement).password.value;
 
-        const userData = {name, age, address, email, password};
+        const userData = {name, email, age, phone, address, university, ref_code, username, password};
         
-        api.post('/users/register', userData)
+        api.post('/users/register-admin', userData)
         .then(()=>{
           console.log("successfull")
           setSuccessMsg("Successfully Regsiter")
@@ -36,7 +41,6 @@ export default function Register() {
         .catch(()=> setErrMsg("Error On Register"))
         .finally(()=> setLoading(false))
     }
-
 
     return (
       <>
@@ -52,8 +56,8 @@ export default function Register() {
 
               {/* Name  */}
               <div className="pb-1">
-                <label htmlFor="email" className="block text-sm font-medium leading-6">
-                  Your Name
+                <label htmlFor="name" className="block text-sm font-medium leading-6">
+                  Name
                 </label>
                 <div className="mt-2">
                   <input
@@ -84,7 +88,7 @@ export default function Register() {
                 </div>
               </div>
 
-              {/* Student Age */}
+              {/* Age */}
               <div>
                 <label htmlFor="age" className="block text-sm font-medium leading-6">
                   Age
@@ -104,7 +108,7 @@ export default function Register() {
 
               {/* Number */}
               <div>
-                <label htmlFor="age" className="block text-sm font-medium leading-6">
+                <label htmlFor="phone" className="block text-sm font-medium leading-6">
                   Phone Number
                 </label>
                 <div className="mt-2">
@@ -141,13 +145,13 @@ export default function Register() {
 
               {/* University name  */}
               <div className="pb-1">
-                <label htmlFor="email" className="block text-sm font-medium leading-6">
+                <label htmlFor="university" className="block text-sm font-medium leading-6">
                   Unibersity Name
                 </label>
                 <div className="mt-2">
                   <input
-                    id="name"
-                    name="name"
+                    id="university"
+                    name="university"
                     type="text"
                     required
                     placeholder="Inter your university name"
@@ -156,18 +160,35 @@ export default function Register() {
                 </div>
               </div>
 
-             {/* Name  */}
+              {/* ref_code  */}
               <div className="pb-1">
-                <label htmlFor="email" className="block text-sm font-medium leading-6">
+                <label htmlFor="ref_code" className="block text-sm font-medium leading-6">
+                  Refrence Code
+                </label>
+                <div className="mt-2">
+                  <input
+                    id="ref_code"
+                    name="ref_code"
+                    type="number"
+                    required
+                    placeholder="Inter admin refrence code"
+                    className="block px-4 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
+                  />
+                </div>
+              </div>
+
+             {/* userName  */}
+              <div className="pb-1">
+                <label htmlFor="username" className="block text-sm font-medium leading-6">
                   User Name
                 </label>
                 <div className="mt-2">
                   <input
-                    id="name"
-                    name="name"
+                    id="username"
+                    name="username"
                     type="text"
                     required
-                    placeholder="Inter your name"
+                    placeholder="Inter your username"
                     className="block px-4 w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:leading-6"
                   />
                 </div>

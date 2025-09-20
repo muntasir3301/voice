@@ -1,6 +1,6 @@
 datasource db {
-  provider = "postgresql"   // or "mysql" / "sqlite"
-  url      = env("DB_URI")
+  provider = "postgresql"
+  url      =  env("DB_URI")
 }
 
 generator client {
@@ -21,8 +21,8 @@ model User{
   password String
 
   profile UserProfile?
+  adminProfile AdminProfile?
   voiceData VoiceData[]
-  // sentences Sentence[] @relation("UserSentences")
 }
 
 model UserProfile{
@@ -30,14 +30,12 @@ model UserProfile{
   user_id Int @unique
   city String
   age Int
-  sentence_id Int @default(1)
-  total    Int     @default(0)
+  sentence_id Int   @default(1)
+  total    Int      @default(0)
   accept    Int     @default(0)
 
   user User @relation(fields: [user_id], references: [id])
 }
-
-
 
 model AdminProfile{
     id Int @id @default(autoincrement())
@@ -46,9 +44,12 @@ model AdminProfile{
     email String
     address String
     phone String
+    age Int
     university String
     total    Int     @default(0)
     accept    Int     @default(0)
+
+    user User @relation(fields: [user_id], references: [id])
 }
 
 model SuperAdminProfile{

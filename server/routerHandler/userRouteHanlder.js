@@ -14,6 +14,45 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/user-profile", async (req, res) => {
+  try {
+    const users = await prisma.userProfile.findMany(); 
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching users" });
+  }
+});
+
+router.get("/admin-profile", async (req, res) => {
+  try {
+    const users = await prisma.adminProfile.findMany(); 
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching users" });
+  }
+});
+
+router.get("/admins", async (req, res) => {
+  
+  try {
+    const users = await prisma.user.findMany({
+      where: {role: "admin"}, 
+      select: {
+        id: true,
+        role: true,
+        ref_code: true,
+        username: true,
+        adminProfile: true
+      }
+    }); 
+
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: "Error fetching users" });
+  }
+});
+
+
 router.get("/user-data/:user_id", async (req, res) => {
   // console.log("hi")
   const { user_id } = req.params;
@@ -62,14 +101,7 @@ router.get("/:ref_code", async (req, res) => {
   }
 });
 
-router.get("/user-profile", async (req, res) => {
-  try {
-    const users = await prisma.userProfile.findMany({}); 
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: "Error fetching users" });
-  }
-});
+
 
 router.get("/user-profile/:id", async (req, res) => {
   const { id } = req.params;
@@ -85,23 +117,17 @@ router.get("/user-profile/:id", async (req, res) => {
   }
 });
 
-router.get("/admin-profile", async (req, res) => {
+
+router.get("/superadmin-profile", async (req, res) => {
   try {
-    const users = await prisma.UserProfile.findMany(); 
+    const users = await prisma.superAdminProfile.findMany(); 
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: "Error fetching users" });
   }
 });
 
-router.get("/supe-radmin--profile", async (req, res) => {
-  try {
-    const users = await prisma.UserProfile.findMany(); 
-    res.json(users);
-  } catch (err) {
-    res.status(500).json({ error: "Error fetching users" });
-  }
-});
+
 
 
 const verifyToken = (req, res, next) => {
@@ -118,42 +144,58 @@ const verifyToken = (req, res, next) => {
 };
 
 
-router.post("/register", async (req, res) => {
+router.post("/register-user", async (req, res) => {
   try {
-    const { username, password, role, ref_code } = req.body;
+    const { username, password, ref_code, city, age } = req.body;
     
     const existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
     
-    // hash password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const newUser = await prisma.user.create({
       data: { username, password: hashedPassword, ref_code},
     });
+
+    await prisma.userProfile.create({
+      data: {user_id: Number(newUser.id), city, age: Number(age)}
+    })
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (err) {
+    console.log(err)
+    res.status(500).json({ message: "Error registering user" });
+  }
+});
+
+
+router.post("/register-admin", async (req, res) => {
+  try {
+    const {name, email, age, phone, address, university, ref_code, username, password} = req.body;
+    
+
+    const existingUser = await prisma.user.findUnique({ where: { username } });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+    
+    
+    // hash password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(hashedPassword)
+    
+    const newUser = await prisma.user.create({
+      data: { username, password: hashedPassword, ref_code: Number(ref_code), role: "admin"},
+    });
     console.log(newUser)
 
-    if(role === "user"){
-      const {name} = req.body;
-
-      await prisma.SuperAdminProfile.create({
-        data: {user_id: newUser.id, name}
-      })
-    }else if(role === "admin"){
-      const {user_id, name, email, address, phone, universiy} = req.body;
-      
-      await prisma.AdminProfile.create({
-        data: {user_id: newUser.id, name, email, address, phone, universiy}
-      });
-    }else{
-      const { city, age } = req.body;
-
-      await prisma.UserProfile.create({
-        data: {user_id: newUser.id, city, age}
-      })
-    }
+    await prisma.adminProfile.create({
+      data: {user_id: Number(newUser.id), name, email, address, phone, university, age: Number(age)}
+    });
+    console.log("hello")
+    
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
@@ -161,6 +203,31 @@ router.post("/register", async (req, res) => {
   }
 });
 
+
+router.post("/register-superadmin", async (req, res) => {
+  try {
+    
+    const username = "superadmin"
+    const password = "bg4<PJ@mB13=a";
+    
+    // hash password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    const newUser = await prisma.user.create({
+      data: { username, password: hashedPassword, ref_code: 12345},
+    });
+    
+    console.log(hashedPassword )
+
+    await prisma.superAdminProfile.create({
+      data: {user_id: newUser.id, name: "Application Admin"}
+    })
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error registering user" });
+  }
+});
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -179,20 +246,6 @@ router.post("/login", async (req, res) => {
 
     // 3. Role-based profile fetch
     let profile = null;
-
-    // if (user.role === "user") {
-    //   profile = await prisma.user_profile.findUnique({
-    //     where: { id: user.id },
-    //   });
-    // } else if (user.role === "admin") {
-    //   profile = await prisma.admin_profile.findUnique({
-    //     where: { id: user.id },
-    //   });
-    // } else if (user.role === "super_admin") {
-    //   profile = await prisma.super_admin_profile.findUnique({
-    //     where: { id: user.id },
-    //   });
-    // }
 
     // 4. Generate token (optional)
     const token = jwt.sign(

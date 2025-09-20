@@ -68,7 +68,7 @@ export default function VoiceRecorder() {
     .then((res)=>{
       setSentenceData(res.data);
       if(res.data===""){
-        alert("Congratulaition! You have added all the voices. If you got reject, you will found them here again in future!")
+        alert("All voices might already be added, or none are available. Please try again or contact the admin.")
       }
     })
     .catch((err)=> console.log(err))

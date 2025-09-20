@@ -29,7 +29,7 @@ export default function Register() {
 
         const userData = {age, city, username, password, ref_code: refcode};
         
-        api.post('/users/register', userData)
+        api.post('/users/register-user', userData)
         .then(()=>{
           console.log("successfull")
           setSuccessMsg("Successfully Regsiter")

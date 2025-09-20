@@ -115,7 +115,7 @@ export default function VoiceRecorder() {
                   </TableRow>
               ))
               :
-            voiceData ? voiceData.map((data, i) => (
+            voiceData.length > 0 ? voiceData.map((data, i) => (
               <TableRow key={i+48512} className={`${i%2==1 && "bg-primary/10"}`}>
               <TableCell className="text-center">{data.sentence_id}</TableCell>
               <TableCell>{data.user.username}</TableCell>
@@ -135,7 +135,7 @@ export default function VoiceRecorder() {
               </TableRow>
             ))
             :
-            <h2>No user found</h2>
+           <h2 className="text-xl w-60 pl-5 py-6">No voice found</h2>
         }
         </TableBody>
       </Table>
