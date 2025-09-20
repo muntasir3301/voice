@@ -71,10 +71,9 @@ export default function VoiceRecorder() {
     .catch((err)=> console.log(err))
   }
 
-  const handleRejectVoice=(id: number, voice_id: number)=>{
-    api.post('/voice-data/reject', {id, voice_id})
+  const handleRejectVoice=(id: number, voice_id: number, sentence_id: number, user_id: number)=>{
+    api.post('/voice-data/reject', {id, voice_id, sentence_id, user_id})
     .then((res)=> {
-      console.log(res.data); 
       setVoiceData(res.data);
     })
     .catch((err)=> console.log(err))
@@ -128,7 +127,7 @@ export default function VoiceRecorder() {
                   <VoicePlayer id={data.id} voice_id={data.voice_id} length={data.length}/>
                     <div className="flex items-center gap-2">
                       <div><button onClick={()=> handleAcceptVoice(data.id, data.sentence_id)} className="bg-green-600 px-4 py-1.5 text-white rounded text-[13px]">Accept</button></div>
-                      <div><button onClick={()=> handleRejectVoice(data.id, data.voice_id)} className="bg-red-600 px-4 py-1.5 text-white rounded text-[13px]">Reject</button></div>
+                      <div><button onClick={()=> handleRejectVoice(data.id, data.voice_id, data.sentence_id, data.user_id)} className="bg-red-600 px-4 py-1.5 text-white rounded text-[13px]">Reject</button></div>
                     </div>
                 </div>
 

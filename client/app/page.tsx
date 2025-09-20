@@ -67,6 +67,9 @@ export default function VoiceRecorder() {
     api.get(`/sentence/${user.id}`)
     .then((res)=>{
       setSentenceData(res.data);
+      if(res.data===""){
+        alert("Congratulaition! You have added all the voices. If you got reject, you will found them here again in future!")
+      }
     })
     .catch((err)=> console.log(err))
   }, [user]);

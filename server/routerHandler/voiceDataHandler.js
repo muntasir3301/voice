@@ -107,16 +107,33 @@ router.post("/accept", async(req, res)=> {
 
 
 router.post("/reject", async(req, res)=> {
-  const { id, voice_id} = req.body;
+  const { id, voice_id, sentence_id, user_id} = req.body;
   
   try{
+    // Delete voice data
     await prisma.voiceData.delete({
       where: {id: Number(id)}
     });
     
+    console.log(user_id, sentence_id);
+
+    // Delete voice record
     await prisma.voice.delete({
       where: {id: Number(voice_id)}
     });
+    console.log(user_id, sentence_id);
+    
+
+    // // pop userId from the sentence array
+    // await prisma.sentence.update({
+    //   where: {sentence_id: Number(sentence_id)},
+    //   pop: {usedBy: {user_id: Number(user_id)}}
+    // })
+    await prisma.$queryRaw`
+      UPDATE "Sentence"
+      SET "usedBy" = array_remove("usedBy", ${Number(user_id)})
+      WHERE "id" = ${Number(sentence_id)};
+    `;
 
     const voiceData = await prisma.voiceData.findMany({
         where: {status: false, ref_code: 101},
@@ -137,6 +154,7 @@ router.post("/reject", async(req, res)=> {
       });
     res.status(201).json(voiceData)
   }catch(error){
+    console.log(error)
     res.status(500).json({ error: "Error fetching voices" });
   }
 })
